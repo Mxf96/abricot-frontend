@@ -1,0 +1,617 @@
+@use '../../variables' as *;
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.projectPage {
+  min-height: calc(100vh - 92px);
+
+  padding: 74px 0 80px;
+
+  background: #f8f9fa;
+}
+
+.projectHeader,
+.contributorsBar,
+.tasksSection {
+  width: min(1240px, calc(100% - 48px));
+
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* =========================================================
+   HEADER DU PROJET
+   ========================================================= */
+
+.projectHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.projectInformations {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 51px;
+  height: 51px;
+
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+
+  color: #252525;
+  background: #ffffff;
+  text-decoration: none;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+.projectTitle {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  h1 {
+    margin: 0;
+
+    font-size: 24px;
+    font-weight: 500;
+  }
+}
+
+.editButton {
+  padding: 0;
+
+  border: 0;
+
+  color: $color-primary;
+  background: transparent;
+
+  font-size: 13px;
+  text-decoration: underline;
+
+  cursor: pointer;
+}
+
+.projectInformations p {
+  margin: 12px 0 0;
+
+  color: #70798a;
+
+  font-size: 16px;
+}
+
+.projectActions {
+  display: flex;
+  gap: 12px;
+}
+
+.createTaskButton,
+.aiButton {
+  height: 48px;
+
+  padding: 0 19px;
+
+  border: 0;
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.createTaskButton {
+  color: #ffffff;
+  background: #202020;
+}
+
+.aiButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #ffffff;
+  background: $color-primary;
+
+  span {
+    font-size: 20px;
+  }
+}
+
+/* =========================================================
+   CONTRIBUTEURS
+   ========================================================= */
+
+.contributorsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 64px;
+
+  margin-top: 46px;
+
+  padding: 0 44px;
+
+  border-radius: 8px;
+
+  background: #f2f3f5;
+}
+
+.contributorsTitle {
+  display: flex;
+  gap: 10px;
+
+  font-size: 15px;
+}
+
+.contributorsCount {
+  color: #7d8694;
+}
+
+.contributors {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 26px;
+  height: 26px;
+
+  border-radius: 50%;
+
+  color: #525861;
+  background: #e2e5e9;
+
+  font-size: 9px;
+}
+
+.ownerAvatar {
+  background: #fde4d4;
+}
+
+.ownerBadge,
+.memberBadge {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 27px;
+
+  padding: 0 15px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+}
+
+.ownerBadge {
+  color: $color-primary;
+  background: #fde4d4;
+}
+
+.memberBadge {
+  color: #737c89;
+  background: #e1e4e9;
+}
+
+/* =========================================================
+   SECTION TÂCHES
+   ========================================================= */
+
+.tasksSection {
+  margin-top: 31px;
+
+  padding: 37px 54px;
+
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+
+  background: #ffffff;
+}
+
+.tasksHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  h2 {
+    margin: 0 0 8px;
+
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0;
+
+    color: #788291;
+
+    font-size: 14px;
+  }
+}
+
+.tasksTools {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* =========================================================
+   VUES
+   ========================================================= */
+
+.viewSelector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.viewButton {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  min-height: 44px;
+
+  padding: 0 15px;
+
+  border: 0;
+  border-radius: 8px;
+
+  color: $color-primary;
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.activeView {
+  background: #fde4d4;
+}
+
+/* =========================================================
+   SELECT
+   ========================================================= */
+
+.statusSelect {
+  width: 145px;
+  height: 58px;
+
+  padding: 0 22px;
+
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+
+  color: #7f8794;
+  background: #ffffff;
+
+  outline: none;
+}
+
+/* =========================================================
+   RECHERCHE
+   ========================================================= */
+
+.search {
+  position: relative;
+
+  width: 275px;
+
+  input {
+    width: 100%;
+    height: 58px;
+
+    padding: 0 48px 0 25px;
+
+    border: 1px solid #dfe3e8;
+    border-radius: 8px;
+
+    outline: none;
+
+    &::placeholder {
+      color: #8a929f;
+    }
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  span {
+    position: absolute;
+    top: 50%;
+    right: 22px;
+
+    color: #707989;
+
+    transform: translateY(-50%);
+  }
+}
+
+/* =========================================================
+   LISTE
+   ========================================================= */
+
+.tasksList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  margin-top: 38px;
+}
+
+/* =========================================================
+   CARTE TÂCHE
+   ========================================================= */
+
+.taskCard {
+  padding: 24px 36px 0;
+
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+
+  background: #ffffff;
+}
+
+.taskTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.taskMain {
+  flex: 1;
+
+  > p {
+    margin: 7px 0 0;
+
+    color: #7d8694;
+
+    font-size: 13px;
+  }
+}
+
+.taskTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  h3 {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 500;
+  }
+}
+
+/* =========================================================
+   STATUT
+   ========================================================= */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 24px;
+
+  padding: 0 13px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+}
+
+.todo {
+  color: #ff5a5a;
+  background: #ffe0e0;
+}
+
+.inProgress {
+  color: #e29a00;
+  background: #fff0cf;
+}
+
+.done {
+  color: #1fa766;
+  background: #e3f8ed;
+}
+
+/* =========================================================
+   MENU
+   ========================================================= */
+
+.taskMenuButton {
+  width: 52px;
+  height: 52px;
+
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+
+  color: #687382;
+  background: #ffffff;
+
+  font-size: 18px;
+
+  cursor: pointer;
+}
+
+/* =========================================================
+   DATE / ASSIGNATION
+   ========================================================= */
+
+.taskDate {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 29px;
+
+  color: #7f8794;
+
+  font-size: 11px;
+
+  strong {
+    color: #4f5660;
+    font-weight: 400;
+  }
+}
+
+.assignees {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 21px;
+
+  color: #818a97;
+
+  font-size: 11px;
+}
+
+/* =========================================================
+   COMMENTAIRES
+   ========================================================= */
+
+.comments {
+  margin-top: 24px;
+
+  border-top: 1px solid #e2e5e9;
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 60px;
+
+    color: #34383e;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+}
+
+.commentArrow {
+  font-size: 18px;
+}
+
+.commentsContent {
+  padding: 0 0 20px;
+
+  color: #7b8492;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .tasksHeader {
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .tasksTools {
+    width: 100%;
+  }
+
+  .search {
+    flex: 1;
+  }
+}
+
+@media (max-width: 800px) {
+  .projectHeader {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .contributorsBar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 20px;
+
+    padding: 20px;
+  }
+
+  .contributors {
+    flex-wrap: wrap;
+  }
+
+  .tasksSection {
+    padding: 30px 24px;
+  }
+
+  .tasksTools {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .statusSelect,
+  .search {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .projectHeader,
+  .contributorsBar,
+  .tasksSection {
+    width: calc(100% - 30px);
+  }
+
+  .projectInformations {
+    align-items: flex-start;
+  }
+
+  .projectTitle {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .projectActions {
+    width: 100%;
+
+    button {
+      flex: 1;
+    }
+  }
+
+  .taskCard {
+    padding: 22px 20px 0;
+  }
+
+  .taskTitle {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .assignees {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+}
