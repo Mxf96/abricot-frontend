@@ -1,3 +1,5 @@
+@use './variables' as *;
+
 * {
   box-sizing: border-box;
 }
@@ -8,6 +10,22 @@ body {
   padding: 0;
 }
 
+html {
+  min-height: 100%;
+}
+
 body {
   min-height: 100vh;
+  font-family: var(--font-inter), Arial, sans-serif;
+  color: $color-text;
+  background: $color-background;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
 }
