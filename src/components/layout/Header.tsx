@@ -11,6 +11,7 @@ export default function Header() {
 
   const isDashboard = pathname.startsWith('/dashboard');
   const isProjects = pathname.startsWith('/projects');
+  const isAccount = pathname.startsWith('/account');
 
   return (
     <header className={styles.header}>
@@ -67,7 +68,7 @@ export default function Header() {
 
         <Link
           href="/account"
-          className={styles.avatar}
+          className={`${styles.avatar} ${isAccount ? styles.activeAvatar : ''}`}
           aria-label="Accéder à mon compte"
         >
           AD

@@ -72,6 +72,11 @@
   text-decoration: none;
 }
 
+.activeAvatar {
+  color: #ffffff;
+  background: $color-primary;
+}
+
 @media (max-width: 900px) {
   .headerContent {
     width: calc(100% - 30px);
