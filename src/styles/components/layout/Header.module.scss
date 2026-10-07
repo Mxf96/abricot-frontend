@@ -2,6 +2,7 @@
 
 .header {
   height: 92px;
+
   background: #ffffff;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
@@ -20,6 +21,8 @@
 .logo {
   display: flex;
   align-items: center;
+
+  text-decoration: none;
 }
 
 .navigation {
@@ -28,30 +31,28 @@
   gap: 35px;
 }
 
-.navLink {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+.navImageLink {
+  position: relative;
 
-  min-height: 62px;
-  padding: 0 35px;
+  display: block;
+
+  width: 200px;
+  height: 60px;
+
+  overflow: hidden;
 
   border-radius: 9px;
 
-  color: $color-primary;
-
-  font-size: 15px;
   text-decoration: none;
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 3px;
+  }
 }
 
-.active {
-  color: #ffffff;
-  background: #1f1f1f;
-}
-
-.dashboardIcon,
-.projectIcon {
-  font-size: 24px;
+.navImage {
+  object-fit: contain;
 }
 
 .avatar {
@@ -71,20 +72,43 @@
   text-decoration: none;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .headerContent {
     width: calc(100% - 30px);
   }
 
-  .navLink {
-    padding: 0 15px;
+  .navigation {
+    gap: 12px;
+  }
 
-    span + & {
-      display: none;
-    }
+  .navImageLink {
+    width: 160px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 700px) {
+  .header {
+    height: auto;
+
+    padding: 15px 0;
+  }
+
+  .headerContent {
+    flex-wrap: wrap;
+    gap: 15px;
   }
 
   .navigation {
-    gap: 8px;
+    order: 3;
+
+    justify-content: center;
+
+    width: 100%;
+  }
+
+  .navImageLink {
+    width: 145px;
+    height: 45px;
   }
 }

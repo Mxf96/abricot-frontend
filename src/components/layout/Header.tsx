@@ -1,9 +1,17 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-import styles from '../../styles/components/layout/Header.module.scss';
+import styles from '@/styles/components/layout/Header.module.scss';
 
 export default function Header() {
+  const pathname = usePathname();
+
+  const isDashboard = pathname.startsWith('/dashboard');
+  const isProjects = pathname.startsWith('/projects');
+
   return (
     <header className={styles.header}>
       <div className={styles.headerContent}>
@@ -11,8 +19,8 @@ export default function Header() {
           <Image
             src="/assets/img/logo/Logo.jpg"
             alt="Abricot"
-            width={145}
-            height={35}
+            width={147}
+            height={19}
             priority
           />
         </Link>
@@ -20,15 +28,40 @@ export default function Header() {
         <nav className={styles.navigation} aria-label="Navigation principale">
           <Link
             href="/dashboard"
-            className={`${styles.navLink} ${styles.active}`}
+            className={styles.navImageLink}
+            aria-label="Tableau de bord"
           >
-            <span className={styles.dashboardIcon}>▦</span>
-            Tableau de bord
+            <Image
+              src={
+                isDashboard
+                  ? '/assets/img/icons/table_active.jpg'
+                  : '/assets/img/icons/table.jpg'
+              }
+              alt=""
+              fill
+              sizes="200px"
+              className={styles.navImage}
+              priority
+            />
           </Link>
 
-          <Link href="/projects" className={styles.navLink}>
-            <span className={styles.projectIcon}>▰</span>
-            Projets
+          <Link
+            href="/projects"
+            className={styles.navImageLink}
+            aria-label="Projets"
+          >
+            <Image
+              src={
+                isProjects
+                  ? '/assets/img/icons/folder_active.jpg'
+                  : '/assets/img/icons/folder.jpg'
+              }
+              alt=""
+              fill
+              sizes="200px"
+              className={styles.navImage}
+              priority
+            />
           </Link>
         </nav>
 

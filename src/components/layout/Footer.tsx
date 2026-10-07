@@ -6,10 +6,10 @@ export default function Footer() {
   return (
     <footer className={styles.footer}>
       <Image
-        src="/assets/img/logo/Logo.svg"
-        alt="Abricot"
-        width={100}
-        height={25}
+        src="/assets/img/logo/Logo_footer.jpg"
+        alt="Abricot 2026"
+        width={101}
+        height={12.86}
       />
 
       <span>Abricot 2026</span>
