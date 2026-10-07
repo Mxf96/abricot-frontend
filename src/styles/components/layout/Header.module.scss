@@ -1,0 +1,90 @@
+@use '../../variables' as *;
+
+.header {
+  height: 92px;
+  background: #ffffff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: min(1240px, calc(100% - 48px));
+  height: 100%;
+
+  margin: 0 auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  min-height: 62px;
+  padding: 0 35px;
+
+  border-radius: 9px;
+
+  color: $color-primary;
+
+  font-size: 15px;
+  text-decoration: none;
+}
+
+.active {
+  color: #ffffff;
+  background: #1f1f1f;
+}
+
+.dashboardIcon,
+.projectIcon {
+  font-size: 24px;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 51px;
+  height: 51px;
+
+  border-radius: 50%;
+
+  color: #292929;
+  background: #fde7d8;
+
+  font-size: 14px;
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .headerContent {
+    width: calc(100% - 30px);
+  }
+
+  .navLink {
+    padding: 0 15px;
+
+    span + & {
+      display: none;
+    }
+  }
+
+  .navigation {
+    gap: 8px;
+  }
+}

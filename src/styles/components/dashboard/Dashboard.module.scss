@@ -1,0 +1,525 @@
+@use '../../variables' as *;
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.dashboard {
+  min-height: calc(100vh - 92px);
+
+  padding: 90px 0 50px;
+
+  background: #f8f9fa;
+}
+
+.dashboardHeader,
+.viewSelector,
+.tasksSection {
+  width: min(1240px, calc(100% - 48px));
+
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* =========================================================
+   EN-TÊTE DU DASHBOARD
+   ========================================================= */
+
+.dashboardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  h1 {
+    margin: 0 0 14px;
+
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0;
+
+    font-size: 16px;
+  }
+}
+
+.createProjectButton {
+  min-width: 176px;
+  height: 48px;
+
+  padding: 0 20px;
+
+  border: 0;
+  border-radius: 8px;
+
+  color: #ffffff;
+  background: #202020;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+/* =========================================================
+   SÉLECTEUR LISTE / KANBAN
+   ========================================================= */
+
+.viewSelector {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 60px;
+  margin-bottom: 29px;
+}
+
+.viewButtonSelector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  min-height: 44px;
+
+  padding: 0 17px;
+
+  border: 0;
+  border-radius: 8px;
+
+  color: $color-primary;
+  background: #ffffff;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #fcefe7;
+  }
+}
+
+.selectedView {
+  background: #fde4d4;
+
+  &:hover {
+    background: #fde4d4;
+  }
+}
+
+.viewIcon {
+  font-size: 16px;
+}
+
+/* =========================================================
+   VUE LISTE
+   ========================================================= */
+
+.tasksSection {
+  padding: 38px 57px;
+
+  border: 1px solid #dde1e6;
+  border-radius: 8px;
+
+  background: #ffffff;
+}
+
+.tasksHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  margin-bottom: 38px;
+
+  h2 {
+    margin: 0 0 8px;
+
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0;
+
+    color: #7b8494;
+
+    font-size: 14px;
+  }
+}
+
+/* =========================================================
+   RECHERCHE
+   ========================================================= */
+
+.search {
+  position: relative;
+
+  width: 345px;
+
+  input {
+    width: 100%;
+    height: 62px;
+
+    padding: 0 50px 0 30px;
+
+    border: 1px solid #dfe3e8;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    outline: none;
+
+    &::placeholder {
+      color: #8b93a1;
+    }
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  span {
+    position: absolute;
+    top: 50%;
+    right: 25px;
+
+    color: #788396;
+
+    transform: translateY(-50%);
+  }
+}
+
+/* =========================================================
+   LISTE DES TÂCHES
+   ========================================================= */
+
+.tasksList {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+/* =========================================================
+   TASK CARD
+   ========================================================= */
+
+.taskCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 158px;
+
+  padding: 25px 38px;
+
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+
+  background: #ffffff;
+}
+
+.taskContent {
+  h3 {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  > p {
+    margin: 8px 0 0;
+
+    color: #7d8796;
+
+    font-size: 14px;
+  }
+}
+
+.taskTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.taskInformations {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 31px;
+
+  color: #7d8796;
+
+  font-size: 12px;
+}
+
+.separator {
+  display: inline-block;
+
+  width: 1px;
+  height: 17px;
+
+  background: #c8ced6;
+}
+
+.taskActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  align-self: stretch;
+}
+
+/* =========================================================
+   STATUTS
+   ========================================================= */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 73px;
+  min-height: 25px;
+
+  padding: 3px 12px;
+
+  border-radius: 20px;
+
+  white-space: nowrap;
+
+  font-size: 12px;
+}
+
+.todo {
+  color: #ff5a5a;
+  background: #ffe0e0;
+}
+
+.inProgress {
+  color: #e69b00;
+  background: #fff0ce;
+}
+
+.done {
+  color: #19a963;
+  background: #e4f8ed;
+}
+
+/* =========================================================
+   BOUTONS DES TÂCHES
+   ========================================================= */
+
+.viewButton,
+.kanbanViewButton {
+  width: 118px;
+  height: 49px;
+
+  border: 0;
+  border-radius: 8px;
+
+  color: #ffffff;
+  background: #202020;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+/* =========================================================
+   VUE KANBAN
+   ========================================================= */
+
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+
+  width: min(1320px, calc(100% - 48px));
+
+  margin: 45px auto 0;
+}
+
+.kanbanColumn {
+  padding: 38px 23px;
+
+  border: 1px solid #f3d4c8;
+  border-radius: 8px;
+
+  background: #ffffff;
+}
+
+.kanbanColumnHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 40px;
+
+  h2 {
+    margin: 0;
+
+    font-size: 17px;
+    font-weight: 500;
+  }
+}
+
+.kanbanCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 38px;
+  height: 24px;
+
+  padding: 0 10px;
+
+  border-radius: 20px;
+
+  color: #6f7682;
+  background: #e8eaed;
+
+  font-size: 12px;
+}
+
+.kanbanTasks {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+/* =========================================================
+   CARTE EN MODE KANBAN
+   ========================================================= */
+
+.kanbanTaskCard {
+  display: block;
+
+  min-height: 220px;
+
+  padding: 27px 38px;
+
+  .taskContent {
+    width: 100%;
+  }
+
+  .taskInformations {
+    margin-top: 31px;
+  }
+}
+
+.kanbanViewButton {
+  margin-top: 30px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .kanban {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard {
+    padding-top: 50px;
+  }
+
+  .dashboardHeader {
+    gap: 30px;
+  }
+
+  .tasksSection {
+    padding: 30px;
+  }
+
+  .tasksHeader {
+    gap: 30px;
+  }
+
+  .search {
+    width: 280px;
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboardHeader,
+  .viewSelector,
+  .tasksSection,
+  .kanban {
+    width: calc(100% - 30px);
+  }
+
+  .dashboardHeader {
+    flex-direction: column;
+  }
+
+  .createProjectButton {
+    width: 100%;
+  }
+
+  .tasksSection {
+    padding: 24px 18px;
+  }
+
+  .tasksHeader {
+    flex-direction: column;
+  }
+
+  .search {
+    width: 100%;
+  }
+
+  .taskCard {
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 25px;
+
+    padding: 25px;
+  }
+
+  .taskActions {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .taskInformations {
+    flex-wrap: wrap;
+  }
+
+  .kanban {
+    grid-template-columns: 1fr;
+
+    margin-top: 30px;
+  }
+
+  .kanbanColumn {
+    padding: 25px 18px;
+  }
+
+  .kanbanTaskCard {
+    display: block;
+
+    min-height: initial;
+
+    padding: 25px;
+  }
+}
