@@ -1,21 +1,12 @@
 import TaskCard from './TaskCard';
 
-import styles from '../../styles/components/dashboard/Dashboard.module.scss';
+import type { DashboardTask } from '@/types/dashboard';
 
-type Task = {
-  id: number;
-  title: string;
-  description: string;
-  project: string;
-  projectId: number;
-  date: string;
-  comments: number;
-  status: 'todo' | 'in-progress' | 'done';
-};
+import styles from '../../styles/components/dashboard/Dashboard.module.scss';
 
 type KanbanColumnProps = {
   title: string;
-  tasks: Task[];
+  tasks: DashboardTask[];
 };
 
 export default function KanbanColumn({ title, tasks }: KanbanColumnProps) {
@@ -29,17 +20,7 @@ export default function KanbanColumn({ title, tasks }: KanbanColumnProps) {
 
       <div className={styles.kanbanTasks}>
         {tasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            title={task.title}
-            description={task.description}
-            project={task.project}
-            projectId={task.projectId}
-            date={task.date}
-            comments={task.comments}
-            status={task.status}
-            variant="kanban"
-          />
+          <TaskCard key={task.id} {...task} variant="kanban" />
         ))}
       </div>
     </div>

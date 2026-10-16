@@ -1,17 +1,17 @@
 import Link from 'next/link';
 
-import styles from '../../styles/components/dashboard/Dashboard.module.scss';
+import type { DashboardTaskStatus } from '@/types/dashboard';
 
-type TaskStatus = 'todo' | 'in-progress' | 'done';
+import styles from '../../styles/components/dashboard/Dashboard.module.scss';
 
 type TaskCardProps = {
   title: string;
   description: string;
   project: string;
-  projectId: number;
+  projectId: string;
   date: string;
   comments: number;
-  status: TaskStatus;
+  status: DashboardTaskStatus;
   variant?: 'list' | 'kanban';
 };
 
@@ -25,7 +25,7 @@ export default function TaskCard({
   status,
   variant = 'list',
 }: TaskCardProps) {
-  const statusLabels: Record<TaskStatus, string> = {
+  const statusLabels: Record<DashboardTaskStatus, string> = {
     todo: 'À faire',
     'in-progress': 'En cours',
     done: 'Terminée',

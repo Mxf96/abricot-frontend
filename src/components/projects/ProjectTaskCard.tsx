@@ -4,12 +4,26 @@ import styles from '@/styles/components/projects/SingleProject.module.scss';
 
 type TaskStatus = 'todo' | 'in-progress' | 'done';
 
+type TaskAssignee = {
+  id: string;
+  initials: string;
+  name: string;
+};
+
+type TaskComment = {
+  id: string;
+  content: string;
+  author: string;
+};
+
 type ProjectTaskCardProps = {
   title: string;
   description: string;
   date: string;
   status: TaskStatus;
   comments: number;
+  assignees: TaskAssignee[];
+  commentItems: TaskComment[];
   onEdit: () => void;
 };
 
@@ -19,6 +33,8 @@ export default function ProjectTaskCard({
   date,
   status,
   comments,
+  assignees,
+  commentItems,
   onEdit,
 }: ProjectTaskCardProps) {
   const statusLabels: Record<TaskStatus, string> = {
@@ -77,11 +93,17 @@ export default function ProjectTaskCard({
       <div className={styles.assignees}>
         <span>Assigné à :</span>
 
-        <span className={styles.avatar}>BD</span>
-        <span className={styles.memberBadge}>Bertrand Dupont</span>
+        {assignees.length === 0 ? (
+          <span>Non assignée</span>
+        ) : (
+          assignees.map((assignee) => (
+            <div key={assignee.id}>
+              <span className={styles.avatar}>{assignee.initials}</span>
 
-        <span className={styles.avatar}>AD</span>
-        <span className={styles.memberBadge}>Anne Dupont</span>
+              <span className={styles.memberBadge}>{assignee.name}</span>
+            </div>
+          ))
+        )}
       </div>
 
       <details className={styles.comments}>
@@ -92,7 +114,17 @@ export default function ProjectTaskCard({
         </summary>
 
         <div className={styles.commentsContent}>
-          Aucun commentaire affiché pour le moment.
+          {commentItems.length === 0 ? (
+            <p>Aucun commentaire.</p>
+          ) : (
+            commentItems.map((comment) => (
+              <p key={comment.id}>
+                <strong>{comment.author}</strong>
+                {' : '}
+                {comment.content}
+              </p>
+            ))
+          )}
         </div>
       </details>
     </article>

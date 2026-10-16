@@ -3,12 +3,13 @@ import Link from 'next/link';
 import styles from '@/styles/components/projects/Projects.module.scss';
 
 type Member = {
+  id: string;
   initials: string;
   role: 'owner' | 'member';
 };
 
 type ProjectCardProps = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   progress: number;
@@ -53,7 +54,9 @@ export default function ProjectCard({
           <div className={styles.progressBar}>
             <div
               className={styles.progressValue}
-              style={{ width: `${progress}%` }}
+              style={{
+                width: `${progress}%`,
+              }}
             />
           </div>
 
@@ -82,7 +85,7 @@ export default function ProjectCard({
 
             <div className={styles.contributors}>
               {contributors.map((member) => (
-                <span key={member.initials} className={styles.avatar}>
+                <span key={member.id} className={styles.avatar}>
                   {member.initials}
                 </span>
               ))}

@@ -162,6 +162,12 @@
   display: flex;
   align-items: center;
   gap: 7px;
+
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
 }
 
 .avatar {
@@ -517,11 +523,24 @@
 }
 
 .commentsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
   padding: 0 0 20px;
 
   color: #7b8492;
 
   font-size: 12px;
+
+  p {
+    margin: 0;
+  }
+
+  strong {
+    color: #34383e;
+    font-weight: 500;
+  }
 }
 
 /* =========================================================
