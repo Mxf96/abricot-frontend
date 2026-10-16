@@ -1,6 +1,16 @@
+'use client';
+
+import { useState } from 'react';
+
 import Link from 'next/link';
+
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
+
+import AITaskModal from '@/components/modals/AITaskModal';
+import ProjectModal from '@/components/modals/ProjectModal';
+import TaskModal from '@/components/modals/TaskModal';
+
 import ProjectTaskCard from '@/components/projects/ProjectTaskCard';
 
 import styles from '@/styles/components/projects/SingleProject.module.scss';
@@ -41,12 +51,19 @@ const tasks = [
 ];
 
 export default function SingleProjectPage() {
+  const [isEditProjectOpen, setIsEditProjectOpen] = useState(false);
+
+  const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
+
+  const [isEditTaskOpen, setIsEditTaskOpen] = useState(false);
+
+  const [isAiOpen, setIsAiOpen] = useState(false);
+
   return (
     <>
       <Header />
 
       <main className={styles.projectPage}>
-        {/* En-tête du projet */}
         <section className={styles.projectHeader}>
           <div className={styles.projectInformations}>
             <Link
@@ -61,7 +78,11 @@ export default function SingleProjectPage() {
               <div className={styles.projectTitle}>
                 <h1>Nom du projet</h1>
 
-                <button type="button" className={styles.editButton}>
+                <button
+                  type="button"
+                  className={styles.editButton}
+                  onClick={() => setIsEditProjectOpen(true)}
+                >
                   Modifier
                 </button>
               </div>
@@ -74,18 +95,25 @@ export default function SingleProjectPage() {
           </div>
 
           <div className={styles.projectActions}>
-            <button type="button" className={styles.createTaskButton}>
+            <button
+              type="button"
+              className={styles.createTaskButton}
+              onClick={() => setIsCreateTaskOpen(true)}
+            >
               Créer une tâche
             </button>
 
-            <button type="button" className={styles.aiButton}>
+            <button
+              type="button"
+              className={styles.aiButton}
+              onClick={() => setIsAiOpen(true)}
+            >
               <span>✦</span>
               IA
             </button>
           </div>
         </section>
 
-        {/* Contributeurs */}
         <section className={styles.contributorsBar}>
           <div className={styles.contributorsTitle}>
             <span>Contributeurs</span>
@@ -107,7 +135,6 @@ export default function SingleProjectPage() {
           </div>
         </section>
 
-        {/* Tâches */}
         <section className={styles.tasksSection}>
           <div className={styles.tasksHeader}>
             <div>
@@ -139,7 +166,9 @@ export default function SingleProjectPage() {
                 </option>
 
                 <option value="todo">À faire</option>
+
                 <option value="in-progress">En cours</option>
+
                 <option value="done">Terminée</option>
               </select>
 
@@ -157,11 +186,35 @@ export default function SingleProjectPage() {
 
           <div className={styles.tasksList}>
             {tasks.map((task) => (
-              <ProjectTaskCard key={task.id} {...task} />
+              <ProjectTaskCard
+                key={task.id}
+                {...task}
+                onEdit={() => setIsEditTaskOpen(true)}
+              />
             ))}
           </div>
         </section>
       </main>
+
+      <ProjectModal
+        isOpen={isEditProjectOpen}
+        onClose={() => setIsEditProjectOpen(false)}
+        mode="edit"
+      />
+
+      <TaskModal
+        isOpen={isCreateTaskOpen}
+        onClose={() => setIsCreateTaskOpen(false)}
+        mode="create"
+      />
+
+      <TaskModal
+        isOpen={isEditTaskOpen}
+        onClose={() => setIsEditTaskOpen(false)}
+        mode="edit"
+      />
+
+      <AITaskModal isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
 
       <Footer />
     </>

@@ -1,3 +1,5 @@
+'use client';
+
 import styles from '@/styles/components/projects/SingleProject.module.scss';
 
 type TaskStatus = 'todo' | 'in-progress' | 'done';
@@ -8,6 +10,7 @@ type ProjectTaskCardProps = {
   date: string;
   status: TaskStatus;
   comments: number;
+  onEdit: () => void;
 };
 
 export default function ProjectTaskCard({
@@ -16,8 +19,9 @@ export default function ProjectTaskCard({
   date,
   status,
   comments,
+  onEdit,
 }: ProjectTaskCardProps) {
-  const statusLabel: Record<TaskStatus, string> = {
+  const statusLabels: Record<TaskStatus, string> = {
     todo: 'À faire',
     'in-progress': 'En cours',
     done: 'Terminée',
@@ -47,7 +51,7 @@ export default function ProjectTaskCard({
             <h3>{title}</h3>
 
             <span className={`${styles.status} ${getStatusClass()}`}>
-              {statusLabel[status]}
+              {statusLabels[status]}
             </span>
           </div>
 
@@ -57,7 +61,8 @@ export default function ProjectTaskCard({
         <button
           type="button"
           className={styles.taskMenuButton}
-          aria-label={`Options pour ${title}`}
+          aria-label={`Modifier ${title}`}
+          onClick={onEdit}
         >
           ...
         </button>

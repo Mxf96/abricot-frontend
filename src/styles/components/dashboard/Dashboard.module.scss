@@ -321,6 +321,10 @@
 
 .viewButton,
 .kanbanViewButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   width: 118px;
   height: 49px;
 
@@ -331,6 +335,7 @@
   background: #202020;
 
   font-size: 14px;
+  text-decoration: none;
 
   cursor: pointer;
 

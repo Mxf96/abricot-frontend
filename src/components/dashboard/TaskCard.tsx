@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import styles from '../../styles/components/dashboard/Dashboard.module.scss';
 
 type TaskStatus = 'todo' | 'in-progress' | 'done';
@@ -6,6 +8,7 @@ type TaskCardProps = {
   title: string;
   description: string;
   project: string;
+  projectId: number;
   date: string;
   comments: number;
   status: TaskStatus;
@@ -16,6 +19,7 @@ export default function TaskCard({
   title,
   description,
   project,
+  projectId,
   date,
   comments,
   status,
@@ -75,9 +79,12 @@ export default function TaskCard({
         </div>
 
         {variant === 'kanban' && (
-          <button type="button" className={styles.kanbanViewButton}>
+          <Link
+            href={`/projects/${projectId}`}
+            className={styles.kanbanViewButton}
+          >
             Voir
-          </button>
+          </Link>
         )}
       </div>
 
@@ -87,9 +94,9 @@ export default function TaskCard({
             {statusLabels[status]}
           </span>
 
-          <button type="button" className={styles.viewButton}>
+          <Link href={`/projects/${projectId}`} className={styles.viewButton}>
             Voir
-          </button>
+          </Link>
         </div>
       )}
     </article>

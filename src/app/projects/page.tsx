@@ -1,5 +1,10 @@
+'use client';
+
+import { useState } from 'react';
+
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
+import ProjectModal from '@/components/modals/ProjectModal';
 import ProjectCard from '@/components/projects/ProjectCard';
 
 import styles from '@/styles/components/projects/Projects.module.scss';
@@ -29,6 +34,8 @@ const projects = Array.from({ length: 9 }, (_, index) => ({
 }));
 
 export default function ProjectsPage() {
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
+
   return (
     <>
       <Header />
@@ -40,7 +47,11 @@ export default function ProjectsPage() {
             <p>Gérez vos projets</p>
           </div>
 
-          <button type="button" className={styles.createProjectButton}>
+          <button
+            type="button"
+            className={styles.createProjectButton}
+            onClick={() => setIsCreateProjectOpen(true)}
+          >
             + Créer un projet
           </button>
         </section>
@@ -51,6 +62,12 @@ export default function ProjectsPage() {
           ))}
         </section>
       </main>
+
+      <ProjectModal
+        isOpen={isCreateProjectOpen}
+        onClose={() => setIsCreateProjectOpen(false)}
+        mode="create"
+      />
 
       <Footer />
     </>

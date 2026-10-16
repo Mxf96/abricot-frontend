@@ -7,6 +7,7 @@ type Task = {
   title: string;
   description: string;
   project: string;
+  projectId: number;
   date: string;
   comments: number;
   status: 'todo' | 'in-progress' | 'done';
@@ -33,6 +34,7 @@ export default function KanbanColumn({ title, tasks }: KanbanColumnProps) {
             title={task.title}
             description={task.description}
             project={task.project}
+            projectId={task.projectId}
             date={task.date}
             comments={task.comments}
             status={task.status}

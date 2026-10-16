@@ -26,7 +26,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
 
   const backgroundImage = isLogin
     ? '/assets/img/login/Log_In.jpg'
-    : '/assets/img/login/Sign_In.jpg ';
+    : '/assets/img/login/Sign_In.jpg';
 
   return (
     <main className={styles.authPage}>

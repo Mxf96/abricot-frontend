@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 
-import Footer from '@/components/layout/Footer';
-import Header from '@/components/layout/Header';
 import KanbanColumn from '@/components/dashboard/KanbanColumn';
 import TaskCard from '@/components/dashboard/TaskCard';
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
+import ProjectModal from '@/components/modals/ProjectModal';
 
 import styles from '../../styles/components/dashboard/Dashboard.module.scss';
 
@@ -18,6 +19,7 @@ type Task = {
   title: string;
   description: string;
   project: string;
+  projectId: number;
   date: string;
   comments: number;
   status: TaskStatus;
@@ -29,6 +31,7 @@ const listTasks: Task[] = [
     title: 'Nom de la tâche',
     description: 'Description de la tâche',
     project: 'Nom du projet',
+    projectId: 1,
     date: '9 mars',
     comments: 2,
     status: 'todo',
@@ -38,6 +41,7 @@ const listTasks: Task[] = [
     title: 'Nom de la tâche',
     description: 'Description de la tâche',
     project: 'Nom du projet',
+    projectId: 1,
     date: '9 mars',
     comments: 2,
     status: 'in-progress',
@@ -47,6 +51,7 @@ const listTasks: Task[] = [
     title: 'Nom de la tâche',
     description: 'Description de la tâche',
     project: 'Nom du projet',
+    projectId: 1,
     date: '9 mars',
     comments: 2,
     status: 'todo',
@@ -56,6 +61,7 @@ const listTasks: Task[] = [
     title: 'Nom de la tâche',
     description: 'Description de la tâche',
     project: 'Nom du projet',
+    projectId: 1,
     date: '9 mars',
     comments: 2,
     status: 'todo',
@@ -65,6 +71,7 @@ const listTasks: Task[] = [
     title: 'Nom de la tâche',
     description: 'Description de la tâche',
     project: 'Nom du projet',
+    projectId: 1,
     date: '9 mars',
     comments: 2,
     status: 'todo',
@@ -74,6 +81,7 @@ const listTasks: Task[] = [
     title: 'Nom de la tâche',
     description: 'Description de la tâche',
     project: 'Nom du projet',
+    projectId: 1,
     date: '9 mars',
     comments: 2,
     status: 'todo',
@@ -86,6 +94,7 @@ const kanbanTasks: Task[] = [
     title: 'Nom de la tâche',
     description: 'Description de la tâche',
     project: 'Nom du projet',
+    projectId: 1,
     date: '9 mars',
     comments: 2,
     status: 'todo' as const,
@@ -96,6 +105,7 @@ const kanbanTasks: Task[] = [
     title: 'Nom de la tâche',
     description: 'Description de la tâche',
     project: 'Nom du projet',
+    projectId: 1,
     date: '9 mars',
     comments: 2,
     status: 'in-progress' as const,
@@ -106,6 +116,7 @@ const kanbanTasks: Task[] = [
     title: 'Nom de la tâche',
     description: 'Description de la tâche',
     project: 'Nom du projet',
+    projectId: 1,
     date: '9 mars',
     comments: 2,
     status: 'done' as const,
@@ -114,6 +125,8 @@ const kanbanTasks: Task[] = [
 
 export default function DashboardPage() {
   const [view, setView] = useState<DashboardView>('list');
+
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
 
   const todoTasks = kanbanTasks.filter((task) => task.status === 'todo');
 
@@ -137,7 +150,11 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <button type="button" className={styles.createProjectButton}>
+          <button
+            type="button"
+            className={styles.createProjectButton}
+            onClick={() => setIsCreateProjectOpen(true)}
+          >
             + Créer un projet
           </button>
         </section>
@@ -203,6 +220,12 @@ export default function DashboardPage() {
           </section>
         )}
       </main>
+
+      <ProjectModal
+        isOpen={isCreateProjectOpen}
+        onClose={() => setIsCreateProjectOpen(false)}
+        mode="create"
+      />
 
       <Footer />
     </>
