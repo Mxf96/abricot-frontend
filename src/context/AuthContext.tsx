@@ -21,6 +21,7 @@ type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   saveSession: (token: string, user: AuthUser) => void;
+  updateUser: (user: AuthUser) => void;
   logout: () => void;
 };
 
@@ -62,7 +63,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const saveSession = (token: string, authenticatedUser: AuthUser) => {
     saveAuthSession(token, authenticatedUser);
+
     setUser(authenticatedUser);
+  };
+
+  const updateUser = (updatedUser: AuthUser) => {
+    setUser(updatedUser);
+
+    const token = getAuthToken();
+
+    if (token) {
+      saveAuthSession(token, updatedUser);
+    }
   };
 
   const logout = () => {
@@ -77,6 +89,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         isAuthenticated: Boolean(user),
         isLoading,
         saveSession,
+        updateUser,
         logout,
       }}
     >

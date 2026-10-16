@@ -1,4 +1,4 @@
-@use "../../variables" as *;
+@use '../../variables' as *;
 
 .overlay {
   position: fixed;
@@ -378,6 +378,34 @@
   right: 52px;
   bottom: 38px;
   left: 52px;
+}
+
+/* ======================================================
+   success or error message
+   ====================================================== */
+.errorMessage {
+  margin: 0;
+
+  color: #c62828;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.successMessage {
+  margin: 0;
+
+  color: #2e7d32;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.submitButton {
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 }
 
 /* ======================================================

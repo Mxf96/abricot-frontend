@@ -96,3 +96,29 @@ export async function getProfile(token: string): Promise<ProfileResponse> {
 
   return data as ProfileResponse;
 }
+
+export async function updateProfile(
+  token: string,
+  name: string,
+  email: string
+): Promise<ProfileResponse> {
+  const response = await fetch(`${API_URL}/auth/profile`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name,
+      email,
+    }),
+  });
+
+  const data: ProfileResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Erreur lors de la modification du profil');
+  }
+
+  return data as ProfileResponse;
+}

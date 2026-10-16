@@ -57,40 +57,46 @@ export default function Header() {
         <nav className={styles.navigation} aria-label="Navigation principale">
           <Link
             href="/dashboard"
-            className={styles.navImageLink}
-            aria-label="Tableau de bord"
+            className={`${styles.navLink} ${
+              isDashboard ? styles.activeNavLink : ''
+            }`}
+            aria-current={isDashboard ? 'page' : undefined}
           >
             <Image
               src={
                 isDashboard
-                  ? '/assets/img/icons/table_active.jpg'
-                  : '/assets/img/icons/table.jpg'
+                  ? '/assets/img/icons/table_active.png'
+                  : '/assets/img/icons/table.png'
               }
               alt=""
-              fill
-              sizes="200px"
-              className={styles.navImage}
-              priority
+              width={24}
+              height={24}
+              className={styles.navIcon}
             />
+
+            <span>Tableau de bord</span>
           </Link>
 
           <Link
             href="/projects"
-            className={styles.navImageLink}
-            aria-label="Projets"
+            className={`${styles.navLink} ${
+              isProjects ? styles.activeNavLink : ''
+            }`}
+            aria-current={isProjects ? 'page' : undefined}
           >
             <Image
               src={
                 isProjects
-                  ? '/assets/img/icons/folder_active.jpg'
-                  : '/assets/img/icons/folder.jpg'
+                  ? '/assets/img/icons/folder_active.png'
+                  : '/assets/img/icons/folder.png'
               }
               alt=""
-              fill
-              sizes="200px"
-              className={styles.navImage}
-              priority
+              width={25}
+              height={25}
+              className={styles.navIcon}
             />
+
+            <span>Projets</span>
           </Link>
         </nav>
 
