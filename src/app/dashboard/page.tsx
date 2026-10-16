@@ -10,6 +10,10 @@ import ProjectModal from '@/components/modals/ProjectModal';
 
 import styles from '../../styles/components/dashboard/Dashboard.module.scss';
 
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+
+import { useAuth } from '@/context/AuthContext';
+
 type DashboardView = 'list' | 'kanban';
 
 type TaskStatus = 'todo' | 'in-progress' | 'done';
@@ -124,6 +128,8 @@ const kanbanTasks: Task[] = [
 ];
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+
   const [view, setView] = useState<DashboardView>('list');
 
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
@@ -137,97 +143,98 @@ export default function DashboardPage() {
   const doneTasks = kanbanTasks.filter((task) => task.status === 'done');
 
   return (
-    <>
-      <Header />
+    <ProtectedRoute>
+        <Header />
 
-      <main className={styles.dashboard}>
-        <section className={styles.dashboardHeader}>
-          <div>
-            <h1>Tableau de bord</h1>
+        <main className={styles.dashboard}>
+          <section className={styles.dashboardHeader}>
+            <div>
+              <h1>Tableau de bord</h1>
 
-            <p>
-              Bonjour Alice Dupont, voici un aperçu de vos projets et tâches
-            </p>
+              <p>
+                Bonjour {user?.name ?? user?.email}, voici un aperçu de vos
+                projets et tâches
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className={styles.createProjectButton}
+              onClick={() => setIsCreateProjectOpen(true)}
+            >
+              + Créer un projet
+            </button>
+          </section>
+
+          <div className={styles.viewSelector}>
+            <button
+              type="button"
+              className={`${styles.viewButtonSelector} ${
+                view === 'list' ? styles.selectedView : ''
+              }`}
+              onClick={() => setView('list')}
+            >
+              <span className={styles.viewIcon}>✓</span>
+              <span>Liste</span>
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.viewButtonSelector} ${
+                view === 'kanban' ? styles.selectedView : ''
+              }`}
+              onClick={() => setView('kanban')}
+            >
+              <span className={styles.viewIcon}>▣</span>
+              <span>Kanban</span>
+            </button>
           </div>
 
-          <button
-            type="button"
-            className={styles.createProjectButton}
-            onClick={() => setIsCreateProjectOpen(true)}
-          >
-            + Créer un projet
-          </button>
-        </section>
+          {view === 'list' && (
+            <section className={styles.tasksSection}>
+              <div className={styles.tasksHeader}>
+                <div>
+                  <h2>Mes tâches assignées</h2>
+                  <p>Par ordre de priorité</p>
+                </div>
 
-        <div className={styles.viewSelector}>
-          <button
-            type="button"
-            className={`${styles.viewButtonSelector} ${
-              view === 'list' ? styles.selectedView : ''
-            }`}
-            onClick={() => setView('list')}
-          >
-            <span className={styles.viewIcon}>✓</span>
-            <span>Liste</span>
-          </button>
+                <div className={styles.search}>
+                  <input
+                    type="search"
+                    placeholder="Rechercher une tâche"
+                    aria-label="Rechercher une tâche"
+                  />
 
-          <button
-            type="button"
-            className={`${styles.viewButtonSelector} ${
-              view === 'kanban' ? styles.selectedView : ''
-            }`}
-            onClick={() => setView('kanban')}
-          >
-            <span className={styles.viewIcon}>▣</span>
-            <span>Kanban</span>
-          </button>
-        </div>
-
-        {view === 'list' && (
-          <section className={styles.tasksSection}>
-            <div className={styles.tasksHeader}>
-              <div>
-                <h2>Mes tâches assignées</h2>
-                <p>Par ordre de priorité</p>
+                  <span>⌕</span>
+                </div>
               </div>
 
-              <div className={styles.search}>
-                <input
-                  type="search"
-                  placeholder="Rechercher une tâche"
-                  aria-label="Rechercher une tâche"
-                />
-
-                <span>⌕</span>
+              <div className={styles.tasksList}>
+                {listTasks.map((task) => (
+                  <TaskCard key={task.id} {...task} />
+                ))}
               </div>
-            </div>
+            </section>
+          )}
 
-            <div className={styles.tasksList}>
-              {listTasks.map((task) => (
-                <TaskCard key={task.id} {...task} />
-              ))}
-            </div>
-          </section>
-        )}
+          {view === 'kanban' && (
+            <section className={styles.kanban}>
+              <KanbanColumn title="À faire" tasks={todoTasks} />
 
-        {view === 'kanban' && (
-          <section className={styles.kanban}>
-            <KanbanColumn title="À faire" tasks={todoTasks} />
+              <KanbanColumn title="En cours" tasks={inProgressTasks} />
 
-            <KanbanColumn title="En cours" tasks={inProgressTasks} />
+              <KanbanColumn title="Terminées" tasks={doneTasks} />
+            </section>
+          )}
+        </main>
 
-            <KanbanColumn title="Terminées" tasks={doneTasks} />
-          </section>
-        )}
-      </main>
+        <ProjectModal
+          isOpen={isCreateProjectOpen}
+          onClose={() => setIsCreateProjectOpen(false)}
+          mode="create"
+        />
 
-      <ProjectModal
-        isOpen={isCreateProjectOpen}
-        onClose={() => setIsCreateProjectOpen(false)}
-        mode="create"
-      />
-
-      <Footer />
-    </>
+        <Footer />
+    </ProtectedRoute>
   );
 }

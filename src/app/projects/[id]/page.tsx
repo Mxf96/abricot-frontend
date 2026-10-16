@@ -15,6 +15,8 @@ import ProjectTaskCard from '@/components/projects/ProjectTaskCard';
 
 import styles from '@/styles/components/projects/SingleProject.module.scss';
 
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+
 const tasks = [
   {
     id: 1,
@@ -60,163 +62,165 @@ export default function SingleProjectPage() {
   const [isAiOpen, setIsAiOpen] = useState(false);
 
   return (
-    <>
-      <Header />
+    <ProtectedRoute>
+        <Header />
 
-      <main className={styles.projectPage}>
-        <section className={styles.projectHeader}>
-          <div className={styles.projectInformations}>
-            <Link
-              href="/projects"
-              className={styles.backButton}
-              aria-label="Retour aux projets"
-            >
-              ←
-            </Link>
-
-            <div>
-              <div className={styles.projectTitle}>
-                <h1>Nom du projet</h1>
-
-                <button
-                  type="button"
-                  className={styles.editButton}
-                  onClick={() => setIsEditProjectOpen(true)}
-                >
-                  Modifier
-                </button>
-              </div>
-
-              <p>
-                Développement de la nouvelle version de l&apos;API REST avec
-                authentification JWT
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.projectActions}>
-            <button
-              type="button"
-              className={styles.createTaskButton}
-              onClick={() => setIsCreateTaskOpen(true)}
-            >
-              Créer une tâche
-            </button>
-
-            <button
-              type="button"
-              className={styles.aiButton}
-              onClick={() => setIsAiOpen(true)}
-            >
-              <span>✦</span>
-              IA
-            </button>
-          </div>
-        </section>
-
-        <section className={styles.contributorsBar}>
-          <div className={styles.contributorsTitle}>
-            <span>Contributeurs</span>
-            <span className={styles.contributorsCount}>3 personnes</span>
-          </div>
-
-          <div className={styles.contributors}>
-            <span className={`${styles.avatar} ${styles.ownerAvatar}`}>AD</span>
-
-            <span className={styles.ownerBadge}>Propriétaire</span>
-
-            <span className={styles.avatar}>BD</span>
-
-            <span className={styles.memberBadge}>Bertrand Dupont</span>
-
-            <span className={styles.avatar}>AD</span>
-
-            <span className={styles.memberBadge}>Anne Dupont</span>
-          </div>
-        </section>
-
-        <section className={styles.tasksSection}>
-          <div className={styles.tasksHeader}>
-            <div>
-              <h2>Tâches</h2>
-              <p>Par ordre de priorité</p>
-            </div>
-
-            <div className={styles.tasksTools}>
-              <div className={styles.viewSelector}>
-                <button
-                  type="button"
-                  className={`${styles.viewButton} ${styles.activeView}`}
-                >
-                  ✓<span>Liste</span>
-                </button>
-
-                <button type="button" className={styles.viewButton}>
-                  ▣<span>Calendrier</span>
-                </button>
-              </div>
-
-              <select
-                className={styles.statusSelect}
-                defaultValue=""
-                aria-label="Filtrer par statut"
+        <main className={styles.projectPage}>
+          <section className={styles.projectHeader}>
+            <div className={styles.projectInformations}>
+              <Link
+                href="/projects"
+                className={styles.backButton}
+                aria-label="Retour aux projets"
               >
-                <option value="" disabled>
-                  Statut
-                </option>
+                ←
+              </Link>
 
-                <option value="todo">À faire</option>
+              <div>
+                <div className={styles.projectTitle}>
+                  <h1>Nom du projet</h1>
 
-                <option value="in-progress">En cours</option>
+                  <button
+                    type="button"
+                    className={styles.editButton}
+                    onClick={() => setIsEditProjectOpen(true)}
+                  >
+                    Modifier
+                  </button>
+                </div>
 
-                <option value="done">Terminée</option>
-              </select>
-
-              <div className={styles.search}>
-                <input
-                  type="search"
-                  placeholder="Rechercher une tâche"
-                  aria-label="Rechercher une tâche"
-                />
-
-                <span>⌕</span>
+                <p>
+                  Développement de la nouvelle version de l&apos;API REST avec
+                  authentification JWT
+                </p>
               </div>
             </div>
-          </div>
 
-          <div className={styles.tasksList}>
-            {tasks.map((task) => (
-              <ProjectTaskCard
-                key={task.id}
-                {...task}
-                onEdit={() => setIsEditTaskOpen(true)}
-              />
-            ))}
-          </div>
-        </section>
-      </main>
+            <div className={styles.projectActions}>
+              <button
+                type="button"
+                className={styles.createTaskButton}
+                onClick={() => setIsCreateTaskOpen(true)}
+              >
+                Créer une tâche
+              </button>
 
-      <ProjectModal
-        isOpen={isEditProjectOpen}
-        onClose={() => setIsEditProjectOpen(false)}
-        mode="edit"
-      />
+              <button
+                type="button"
+                className={styles.aiButton}
+                onClick={() => setIsAiOpen(true)}
+              >
+                <span>✦</span>
+                IA
+              </button>
+            </div>
+          </section>
 
-      <TaskModal
-        isOpen={isCreateTaskOpen}
-        onClose={() => setIsCreateTaskOpen(false)}
-        mode="create"
-      />
+          <section className={styles.contributorsBar}>
+            <div className={styles.contributorsTitle}>
+              <span>Contributeurs</span>
+              <span className={styles.contributorsCount}>3 personnes</span>
+            </div>
 
-      <TaskModal
-        isOpen={isEditTaskOpen}
-        onClose={() => setIsEditTaskOpen(false)}
-        mode="edit"
-      />
+            <div className={styles.contributors}>
+              <span className={`${styles.avatar} ${styles.ownerAvatar}`}>
+                AD
+              </span>
 
-      <AITaskModal isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
+              <span className={styles.ownerBadge}>Propriétaire</span>
 
-      <Footer />
-    </>
+              <span className={styles.avatar}>BD</span>
+
+              <span className={styles.memberBadge}>Bertrand Dupont</span>
+
+              <span className={styles.avatar}>AD</span>
+
+              <span className={styles.memberBadge}>Anne Dupont</span>
+            </div>
+          </section>
+
+          <section className={styles.tasksSection}>
+            <div className={styles.tasksHeader}>
+              <div>
+                <h2>Tâches</h2>
+                <p>Par ordre de priorité</p>
+              </div>
+
+              <div className={styles.tasksTools}>
+                <div className={styles.viewSelector}>
+                  <button
+                    type="button"
+                    className={`${styles.viewButton} ${styles.activeView}`}
+                  >
+                    ✓<span>Liste</span>
+                  </button>
+
+                  <button type="button" className={styles.viewButton}>
+                    ▣<span>Calendrier</span>
+                  </button>
+                </div>
+
+                <select
+                  className={styles.statusSelect}
+                  defaultValue=""
+                  aria-label="Filtrer par statut"
+                >
+                  <option value="" disabled>
+                    Statut
+                  </option>
+
+                  <option value="todo">À faire</option>
+
+                  <option value="in-progress">En cours</option>
+
+                  <option value="done">Terminée</option>
+                </select>
+
+                <div className={styles.search}>
+                  <input
+                    type="search"
+                    placeholder="Rechercher une tâche"
+                    aria-label="Rechercher une tâche"
+                  />
+
+                  <span>⌕</span>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.tasksList}>
+              {tasks.map((task) => (
+                <ProjectTaskCard
+                  key={task.id}
+                  {...task}
+                  onEdit={() => setIsEditTaskOpen(true)}
+                />
+              ))}
+            </div>
+          </section>
+        </main>
+
+        <ProjectModal
+          isOpen={isEditProjectOpen}
+          onClose={() => setIsEditProjectOpen(false)}
+          mode="edit"
+        />
+
+        <TaskModal
+          isOpen={isCreateTaskOpen}
+          onClose={() => setIsCreateTaskOpen(false)}
+          mode="create"
+        />
+
+        <TaskModal
+          isOpen={isEditTaskOpen}
+          onClose={() => setIsEditTaskOpen(false)}
+          mode="edit"
+        />
+
+        <AITaskModal isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
+
+        <Footer />
+    </ProtectedRoute>
   );
 }

@@ -9,6 +9,8 @@ import ProjectCard from '@/components/projects/ProjectCard';
 
 import styles from '@/styles/components/projects/Projects.module.scss';
 
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+
 const projects = Array.from({ length: 9 }, (_, index) => ({
   id: index + 1,
   name: 'Nom du projet',
@@ -37,39 +39,39 @@ export default function ProjectsPage() {
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
 
   return (
-    <>
-      <Header />
+    <ProtectedRoute>
+        <Header />
 
-      <main className={styles.projectsPage}>
-        <section className={styles.projectsHeader}>
-          <div>
-            <h1>Mes projets</h1>
-            <p>Gérez vos projets</p>
-          </div>
+        <main className={styles.projectsPage}>
+          <section className={styles.projectsHeader}>
+            <div>
+              <h1>Mes projets</h1>
+              <p>Gérez vos projets</p>
+            </div>
 
-          <button
-            type="button"
-            className={styles.createProjectButton}
-            onClick={() => setIsCreateProjectOpen(true)}
-          >
-            + Créer un projet
-          </button>
-        </section>
+            <button
+              type="button"
+              className={styles.createProjectButton}
+              onClick={() => setIsCreateProjectOpen(true)}
+            >
+              + Créer un projet
+            </button>
+          </section>
 
-        <section className={styles.projectsGrid}>
-          {projects.map((project) => (
-            <ProjectCard key={project.id} {...project} />
-          ))}
-        </section>
-      </main>
+          <section className={styles.projectsGrid}>
+            {projects.map((project) => (
+              <ProjectCard key={project.id} {...project} />
+            ))}
+          </section>
+        </main>
 
-      <ProjectModal
-        isOpen={isCreateProjectOpen}
-        onClose={() => setIsCreateProjectOpen(false)}
-        mode="create"
-      />
+        <ProjectModal
+          isOpen={isCreateProjectOpen}
+          onClose={() => setIsCreateProjectOpen(false)}
+          mode="create"
+        />
 
-      <Footer />
-    </>
+        <Footer />
+    </ProtectedRoute>
   );
 }

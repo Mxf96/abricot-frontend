@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+
+import { AuthProvider } from '@/context/AuthContext';
+
 import '../styles/globals.scss';
 
 const inter = Inter({
@@ -19,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className={inter.variable}>{children}</body>
+      <body className={inter.variable}>
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

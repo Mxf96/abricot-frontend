@@ -3,76 +3,78 @@ import Header from '@/components/layout/Header';
 
 import styles from '@/styles/components/account/Account.module.scss';
 
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+
 export default function AccountPage() {
   return (
-    <>
-      <Header />
+    <ProtectedRoute>
+        <Header />
 
-      <main className={styles.accountPage}>
-        <section className={styles.accountCard}>
-          <div className={styles.accountHeader}>
-            <h1>Mon compte</h1>
+        <main className={styles.accountPage}>
+          <section className={styles.accountCard}>
+            <div className={styles.accountHeader}>
+              <h1>Mon compte</h1>
 
-            <p>Amélie Dupont</p>
-          </div>
-
-          <form className={styles.accountForm}>
-            <div className={styles.field}>
-              <label htmlFor="lastName">Nom</label>
-
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                placeholder="Dupont"
-                autoComplete="family-name"
-              />
+              <p>Amélie Dupont</p>
             </div>
 
-            <div className={styles.field}>
-              <label htmlFor="firstName">Prénom</label>
+            <form className={styles.accountForm}>
+              <div className={styles.field}>
+                <label htmlFor="lastName">Nom</label>
 
-              <input
-                id="firstName"
-                name="firstName"
-                type="text"
-                placeholder="Amélie"
-                autoComplete="given-name"
-              />
-            </div>
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  placeholder="Dupont"
+                  autoComplete="family-name"
+                />
+              </div>
 
-            <div className={styles.field}>
-              <label htmlFor="email">Email</label>
+              <div className={styles.field}>
+                <label htmlFor="firstName">Prénom</label>
 
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="a.dupont@mail.com"
-                autoComplete="email"
-              />
-            </div>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  placeholder="Amélie"
+                  autoComplete="given-name"
+                />
+              </div>
 
-            <div className={styles.field}>
-              <label htmlFor="password">Mot de passe</label>
+              <div className={styles.field}>
+                <label htmlFor="email">Email</label>
 
-              <input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Nouveau mot de passe"
-                autoComplete="new-password"
-              />
-            </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="a.dupont@mail.com"
+                  autoComplete="email"
+                />
+              </div>
 
-            <button type="submit" className={styles.submitButton}>
-              Modifier les informations
-            </button>
-          </form>
-        </section>
-      </main>
+              <div className={styles.field}>
+                <label htmlFor="password">Mot de passe</label>
 
-      <Footer />
-    </>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="Nouveau mot de passe"
+                  autoComplete="new-password"
+                />
+              </div>
+
+              <button type="submit" className={styles.submitButton}>
+                Modifier les informations
+              </button>
+            </form>
+          </section>
+        </main>
+
+        <Footer />
+    </ProtectedRoute>
   );
 }
