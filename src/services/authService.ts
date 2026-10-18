@@ -24,10 +24,19 @@ type ProfileResponse = {
   };
 };
 
+type ApiValidationError = {
+  field: string;
+  message: string;
+};
+
 type ApiErrorResponse = {
   success: false;
   message: string;
   error?: string;
+
+  data?: {
+    errors?: ApiValidationError[];
+  };
 };
 
 export async function register(
@@ -121,4 +130,45 @@ export async function updateProfile(
   }
 
   return data as ProfileResponse;
+}
+
+type UpdatePasswordResponse = {
+  success: boolean;
+  message: string;
+};
+
+export async function updatePassword(
+  token: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<UpdatePasswordResponse> {
+  const response = await fetch(`${API_URL}/auth/password`, {
+    method: 'PUT',
+
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: JSON.stringify({
+      currentPassword,
+      newPassword,
+    }),
+  });
+
+  const data: UpdatePasswordResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    const validationMessage = errorData.data?.errors?.[0]?.message;
+
+    throw new Error(
+      validationMessage ||
+        errorData.message ||
+        'Erreur lors de la modification du mot de passe'
+    );
+  }
+
+  return data as UpdatePasswordResponse;
 }

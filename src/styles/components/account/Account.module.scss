@@ -1,4 +1,4 @@
-@use "../../variables" as *;
+@use '../../variables' as *;
 
 .accountPage {
   min-height: calc(100vh - 92px);
@@ -83,6 +83,59 @@
       box-shadow: 0 0 0 2px rgba($color-primary, 0.1);
     }
   }
+}
+
+.passwordSection {
+  margin-top: 55px;
+  padding-top: 45px;
+
+  border-top: 1px solid #dfe3e8;
+}
+
+.passwordHeader {
+  margin-bottom: 30px;
+
+  h2 {
+    margin: 0 0 8px;
+
+    color: #202020;
+
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0;
+
+    color: #737d8d;
+
+    font-size: 14px;
+  }
+}
+
+.fieldHint {
+  color: #737d8d;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.errorMessage {
+  margin: 0;
+
+  color: #c62828;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.successMessage {
+  margin: 0;
+
+  color: #2e7d32;
+
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .submitButton {
