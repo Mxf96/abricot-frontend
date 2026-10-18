@@ -289,6 +289,40 @@ export async function updateProject(
 }
 
 /* -------------------------------------------------------------------------- */
+/*                              PROJECT DELETE                                */
+/* -------------------------------------------------------------------------- */
+
+type DeleteProjectResponse = {
+  success: boolean;
+  message: string;
+};
+
+export async function deleteProject(
+  token: string,
+  projectId: string
+): Promise<DeleteProjectResponse> {
+  const response = await fetch(`${API_URL}/projects/${projectId}`, {
+    method: 'DELETE',
+
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data: DeleteProjectResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    throw new Error(
+      errorData.message || 'Erreur lors de la suppression du projet'
+    );
+  }
+
+  return data as DeleteProjectResponse;
+}
+
+/* -------------------------------------------------------------------------- */
 /*                           PROJECT CONTRIBUTORS                             */
 /* -------------------------------------------------------------------------- */
 

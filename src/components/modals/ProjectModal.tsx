@@ -9,8 +9,9 @@ import {
   ContributorRole,
   addContributor,
   createProject,
-  removeContributor,
   updateProject,
+  deleteProject,
+  removeContributor,
 } from '@/services/projectService';
 
 import { getAuthToken } from '@/utils/authStorage';
@@ -26,6 +27,8 @@ type ProjectModalProps = {
   project?: ApiProjectDetails | null;
 
   onSuccess?: () => void;
+
+  onDeleteSuccess?: () => void;
 };
 
 export default function ProjectModal({
@@ -34,6 +37,7 @@ export default function ProjectModal({
   mode,
   project = null,
   onSuccess,
+  onDeleteSuccess,
 }: ProjectModalProps) {
   const isEdit = mode === 'edit';
 
@@ -50,8 +54,13 @@ export default function ProjectModal({
 
   const [isContributorLoading, setIsContributorLoading] = useState(false);
 
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] =
+    useState(false);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleClose = () => {
-    if (isLoading || isContributorLoading) {
+    if (isLoading || isContributorLoading || isDeleting) {
       return;
     }
 
@@ -59,6 +68,7 @@ export default function ProjectModal({
     setContributorError('');
     setContributorEmail('');
     setContributorRole('CONTRIBUTOR');
+    setIsDeleteConfirmationOpen(false);
 
     onClose();
   };
@@ -140,6 +150,43 @@ export default function ProjectModal({
       }
     } finally {
       setIsContributorLoading(false);
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!project) {
+      setError('Projet introuvable.');
+
+      return;
+    }
+
+    const token = getAuthToken();
+
+    if (!token) {
+      setError('Session utilisateur introuvable.');
+
+      return;
+    }
+
+    setError('');
+    setIsDeleting(true);
+
+    try {
+      await deleteProject(token, project.id);
+
+      setIsDeleteConfirmationOpen(false);
+
+      onClose();
+
+      onDeleteSuccess?.();
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('Une erreur est survenue lors de la suppression du projet.');
+      }
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -406,19 +453,58 @@ export default function ProjectModal({
           {/*                         SUBMIT                                  */}
           {/* -------------------------------------------------------------- */}
 
-          <button
-            type="submit"
-            className={styles.submitButton}
-            disabled={isLoading || isContributorLoading}
-          >
-            {isLoading
-              ? isEdit
-                ? 'Modification...'
-                : 'Création...'
-              : isEdit
-                ? 'Enregistrer'
-                : 'Ajouter un projet'}
-          </button>
+          <div className={styles.projectModalActions}>
+            <button
+              type="submit"
+              className={styles.submitButton}
+              disabled={isLoading || isContributorLoading || isDeleting}
+            >
+              {isLoading
+                ? isEdit
+                  ? 'Modification...'
+                  : 'Création...'
+                : isEdit
+                  ? 'Enregistrer'
+                  : 'Ajouter un projet'}
+            </button>
+
+            {isEdit && project && (
+              <button
+                type="button"
+                className={styles.deleteProjectButton}
+                disabled={isLoading || isContributorLoading || isDeleting}
+                onClick={() => setIsDeleteConfirmationOpen(true)}
+              >
+                Supprimer le projet
+              </button>
+            )}
+          </div>
+
+          {isEdit && isDeleteConfirmationOpen && (
+            <div className={styles.deleteConfirmation}>
+              <p>Êtes-vous sûr de vouloir supprimer ce projet ?</p>
+
+              <div className={styles.deleteConfirmationActions}>
+                <button
+                  type="button"
+                  className={styles.cancelDeleteButton}
+                  disabled={isDeleting}
+                  onClick={() => setIsDeleteConfirmationOpen(false)}
+                >
+                  Non
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.confirmDeleteButton}
+                  disabled={isDeleting}
+                  onClick={handleDeleteProject}
+                >
+                  {isDeleting ? 'Suppression...' : 'Oui, supprimer'}
+                </button>
+              </div>
+            </div>
+          )}
         </form>
       </div>
     </Modal>

@@ -178,9 +178,11 @@ export default function ProjectsPage() {
           <p role="alert">{projectsError}</p>
         )}
 
-        {!isProjectsLoading && !projectsError && projects.length === 0 && (
-          <p>Aucun projet pour le moment.</p>
-        )}
+        <div className={styles.projectsBody}>
+          {!isProjectsLoading && !projectsError && projects.length === 0 && (
+            <p>Aucun projet pour le moment.</p>
+          )}
+        </div>
 
         {!isProjectsLoading && !projectsError && projects.length > 0 && (
           <section className={styles.projectsGrid}>

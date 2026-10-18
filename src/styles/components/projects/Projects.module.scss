@@ -45,6 +45,13 @@
   }
 }
 
+.projectsBody {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-left: 400px;
+}
+
 .createProjectButton {
   min-width: 176px;
   height: 48px;

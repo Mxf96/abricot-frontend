@@ -196,9 +196,14 @@
 .assigneeOptionSelected {
   border-color: $color-primary;
 
+  color: #202020;
   background: rgba($color-primary, 0.08);
 
-  color: #202020;
+  .assigneeCheckbox {
+    border-color: $color-primary;
+
+    background: $color-primary;
+  }
 }
 
 .assigneeCheckbox {
@@ -217,14 +222,6 @@
 
   font-size: 13px;
   font-weight: 600;
-}
-
-.assigneeOptionSelected {
-  .assigneeCheckbox {
-    border-color: $color-primary;
-
-    background: $color-primary;
-  }
 }
 
 .assigneeName {
@@ -580,6 +577,149 @@
 }
 
 /* ======================================================
+   PROJECT DELETE
+   ====================================================== */
+
+.projectModalActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 28px;
+
+  .submitButton {
+    margin-top: 0;
+  }
+}
+
+.deleteProjectButton {
+  min-width: 181px;
+  height: 51px;
+
+  padding: 0 17px;
+
+  border: 1px solid #c62828;
+  border-radius: 9px;
+
+  color: #c62828;
+  background: #ffffff;
+
+  font-size: 16px;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    color: #ffffff;
+    background: #c62828;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #c62828;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+  }
+}
+
+.deleteConfirmation {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  padding: 18px;
+
+  border: 1px solid #f0c2c2;
+  border-radius: 8px;
+
+  background: #fff8f8;
+
+  p {
+    margin: 0;
+
+    color: #202020;
+
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+}
+
+.deleteConfirmationActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cancelDeleteButton,
+.confirmDeleteButton {
+  min-width: 120px;
+  height: 40px;
+
+  padding: 0 16px;
+
+  border-radius: 6px;
+
+  font: inherit;
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+
+  &:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+  }
+}
+
+.cancelDeleteButton {
+  border: 1px solid #d9dee5;
+
+  color: #202020;
+  background: #ffffff;
+
+  &:hover:not(:disabled) {
+    background: #f5f6f7;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #737d8d;
+    outline-offset: 2px;
+  }
+}
+
+.confirmDeleteButton {
+  border: 1px solid #c62828;
+
+  color: #ffffff;
+  background: #c62828;
+
+  &:hover:not(:disabled) {
+    border-color: #a91f1f;
+
+    background: #a91f1f;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #c62828;
+    outline-offset: 2px;
+  }
+}
+
+/* ======================================================
    AI - GENERATION
    ====================================================== */
 
@@ -780,6 +920,10 @@
     flex-wrap: wrap;
   }
 
+  /* ------------------------------------------------------
+     PROJECT CONTRIBUTORS
+     ------------------------------------------------------ */
+
   .addContributor {
     grid-template-columns: 1fr;
   }
@@ -787,6 +931,39 @@
   .addContributorButton {
     grid-column: auto;
   }
+
+  /* ------------------------------------------------------
+     PROJECT DELETE
+     ------------------------------------------------------ */
+
+  .projectModalActions {
+    flex-direction: column;
+    align-items: stretch;
+
+    .submitButton,
+    .deleteProjectButton {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .submitButton {
+      align-self: stretch;
+    }
+  }
+
+  .deleteConfirmationActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cancelDeleteButton,
+  .confirmDeleteButton {
+    width: 100%;
+  }
+
+  /* ------------------------------------------------------
+     AI
+     ------------------------------------------------------ */
 
   .aiModal,
   .aiListModal {

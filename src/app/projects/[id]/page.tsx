@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
@@ -151,6 +151,8 @@ function transformTask(task: ApiProjectTask): DisplayTask | null {
 export default function SingleProjectPage() {
   const params = useParams<{ id: string }>();
 
+  const router = useRouter();
+
   const projectId = params.id;
 
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -180,6 +182,10 @@ export default function SingleProjectPage() {
   const [isEditTaskOpen, setIsEditTaskOpen] = useState(false);
 
   const [isAiOpen, setIsAiOpen] = useState(false);
+
+  /* -------------------------------------------------------------------------- */
+  /*                             CHARGEMENT PROJET                              */
+  /* -------------------------------------------------------------------------- */
 
   useEffect(() => {
     if (isAuthLoading || !user || !projectId) {
@@ -263,6 +269,10 @@ export default function SingleProjectPage() {
     };
   }, [projectId, isAuthLoading, user?.id, projectRefreshKey]);
 
+  /* -------------------------------------------------------------------------- */
+  /*                              FILTRE TÂCHES                                 */
+  /* -------------------------------------------------------------------------- */
+
   const filteredTasks = useMemo(() => {
     const value = search.trim().toLowerCase();
 
@@ -279,7 +289,15 @@ export default function SingleProjectPage() {
     });
   }, [tasks, search, statusFilter]);
 
+  /* -------------------------------------------------------------------------- */
+  /*                              PERMISSIONS                                   */
+  /* -------------------------------------------------------------------------- */
+
   const canEditProject = project?.userRole === 'ADMIN';
+
+  /* -------------------------------------------------------------------------- */
+  /*                            CONTRIBUTEURS                                   */
+  /* -------------------------------------------------------------------------- */
 
   const totalPeople = project ? project.members.length + 1 : 0;
 
@@ -299,6 +317,10 @@ export default function SingleProjectPage() {
       ]
     : [];
 
+  /* -------------------------------------------------------------------------- */
+  /*                              MODIFIER TÂCHE                                */
+  /* -------------------------------------------------------------------------- */
+
   const handleEditTask = (taskId: string) => {
     const taskToEdit = apiTasks.find((task) => task.id === taskId);
 
@@ -310,6 +332,10 @@ export default function SingleProjectPage() {
 
     setIsEditTaskOpen(true);
   };
+
+  /* -------------------------------------------------------------------------- */
+  /*                              SUPPRIMER TÂCHE                               */
+  /* -------------------------------------------------------------------------- */
 
   const handleDeleteTask = async (taskId: string, taskTitle: string) => {
     const confirmed = window.confirm(
@@ -341,27 +367,55 @@ export default function SingleProjectPage() {
     }
   };
 
+  /* -------------------------------------------------------------------------- */
+  /*                          PROJET SUPPRIMÉ                                   */
+  /* -------------------------------------------------------------------------- */
+
+  const handleProjectDeleted = () => {
+    router.push('/projects');
+  };
+
   return (
     <ProtectedRoute>
       <Header />
 
       <main className={styles.projectPage}>
+        {/* -------------------------------------------------------------- */}
+        {/*                         CHARGEMENT                             */}
+        {/* -------------------------------------------------------------- */}
+
         {isProjectLoading && <p>Chargement du projet...</p>}
+
+        {/* -------------------------------------------------------------- */}
+        {/*                            ERREUR                              */}
+        {/* -------------------------------------------------------------- */}
 
         {!isProjectLoading && projectError && (
           <section className={styles.projectHeader}>
             <div>
               <p role="alert">{projectError}</p>
 
-              <Link href="/projects" className={styles.backButton}>
+              <Link
+                href="/projects"
+                className={styles.backButton}
+                aria-label="Retour aux projets"
+              >
                 ←
               </Link>
             </div>
           </section>
         )}
 
+        {/* -------------------------------------------------------------- */}
+        {/*                            PROJET                              */}
+        {/* -------------------------------------------------------------- */}
+
         {!isProjectLoading && !projectError && project && (
           <>
+            {/* -------------------------------------------------------- */}
+            {/*                     EN-TÊTE PROJET                       */}
+            {/* -------------------------------------------------------- */}
+
             <section className={styles.projectHeader}>
               <div className={styles.projectInformations}>
                 <Link
@@ -411,6 +465,10 @@ export default function SingleProjectPage() {
               </div>
             </section>
 
+            {/* -------------------------------------------------------- */}
+            {/*                      CONTRIBUTEURS                       */}
+            {/* -------------------------------------------------------- */}
+
             <section className={styles.contributorsBar}>
               <div className={styles.contributorsTitle}>
                 <span>Contributeurs</span>
@@ -441,6 +499,10 @@ export default function SingleProjectPage() {
               </div>
             </section>
 
+            {/* -------------------------------------------------------- */}
+            {/*                           TÂCHES                         */}
+            {/* -------------------------------------------------------- */}
+
             <section className={styles.tasksSection}>
               <div className={styles.tasksHeader}>
                 <div>
@@ -450,6 +512,10 @@ export default function SingleProjectPage() {
                 </div>
 
                 <div className={styles.tasksTools}>
+                  {/* -------------------------------------------------- */}
+                  {/*                     VUES                           */}
+                  {/* -------------------------------------------------- */}
+
                   <div className={styles.viewSelector}>
                     <button
                       type="button"
@@ -462,6 +528,10 @@ export default function SingleProjectPage() {
                       ▣<span>Calendrier</span>
                     </button>
                   </div>
+
+                  {/* -------------------------------------------------- */}
+                  {/*                     FILTRE                         */}
+                  {/* -------------------------------------------------- */}
 
                   <select
                     className={styles.statusSelect}
@@ -480,6 +550,10 @@ export default function SingleProjectPage() {
                     <option value="done">Terminée</option>
                   </select>
 
+                  {/* -------------------------------------------------- */}
+                  {/*                    RECHERCHE                        */}
+                  {/* -------------------------------------------------- */}
+
                   <div className={styles.search}>
                     <input
                       type="search"
@@ -493,6 +567,10 @@ export default function SingleProjectPage() {
                   </div>
                 </div>
               </div>
+
+              {/* ------------------------------------------------------ */}
+              {/*                     LISTE TÂCHES                       */}
+              {/* ------------------------------------------------------ */}
 
               <div className={styles.tasksList}>
                 {filteredTasks.length === 0 ? (
@@ -513,13 +591,22 @@ export default function SingleProjectPage() {
         )}
       </main>
 
+      {/* ---------------------------------------------------------------- */}
+      {/*                      MODIFICATION PROJET                          */}
+      {/* ---------------------------------------------------------------- */}
+
       <ProjectModal
         isOpen={isEditProjectOpen}
         onClose={() => setIsEditProjectOpen(false)}
         mode="edit"
         project={project}
         onSuccess={() => setProjectRefreshKey((current) => current + 1)}
+        onDeleteSuccess={handleProjectDeleted}
       />
+
+      {/* ---------------------------------------------------------------- */}
+      {/*                       CRÉATION TÂCHE                              */}
+      {/* ---------------------------------------------------------------- */}
 
       <TaskModal
         isOpen={isCreateTaskOpen}
@@ -530,10 +617,15 @@ export default function SingleProjectPage() {
         onSuccess={() => setProjectRefreshKey((current) => current + 1)}
       />
 
+      {/* ---------------------------------------------------------------- */}
+      {/*                      MODIFICATION TÂCHE                           */}
+      {/* ---------------------------------------------------------------- */}
+
       <TaskModal
         isOpen={isEditTaskOpen}
         onClose={() => {
           setIsEditTaskOpen(false);
+
           setSelectedTask(null);
         }}
         mode="edit"
@@ -542,6 +634,10 @@ export default function SingleProjectPage() {
         task={selectedTask}
         onSuccess={() => setProjectRefreshKey((current) => current + 1)}
       />
+
+      {/* ---------------------------------------------------------------- */}
+      {/*                             IA                                    */}
+      {/* ---------------------------------------------------------------- */}
 
       <AITaskModal isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
 
