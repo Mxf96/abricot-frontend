@@ -93,6 +93,8 @@ export default function ProjectsPage() {
 
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
 
+  const [projectsRefreshKey, setProjectsRefreshKey] = useState(0);
+
   const [projects, setProjects] = useState<ProjectCardData[]>([]);
 
   const [isProjectsLoading, setIsProjectsLoading] = useState(true);
@@ -148,7 +150,7 @@ export default function ProjectsPage() {
     return () => {
       isCancelled = true;
     };
-  }, [isAuthLoading, user?.id]);
+  }, [isAuthLoading, user?.id, projectsRefreshKey]);
 
   return (
     <ProtectedRoute>
@@ -193,6 +195,7 @@ export default function ProjectsPage() {
         isOpen={isCreateProjectOpen}
         onClose={() => setIsCreateProjectOpen(false)}
         mode="create"
+        onSuccess={() => setProjectsRefreshKey((current) => current + 1)}
       />
 
       <Footer />

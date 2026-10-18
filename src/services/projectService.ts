@@ -85,11 +85,51 @@ type ProjectTasksResponse = {
   };
 };
 
+type ApiValidationError = {
+  field: string;
+  message: string;
+};
+
 type ApiErrorResponse = {
   success: false;
   message: string;
   error?: string;
+  data?: {
+    errors?: ApiValidationError[];
+  };
 };
+
+export async function createProject(
+  token: string,
+  payload: CreateProjectPayload
+): Promise<CreateProjectResponse> {
+  const response = await fetch(`${API_URL}/projects`, {
+    method: 'POST',
+
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: JSON.stringify(payload),
+  });
+
+  const data: CreateProjectResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    const validationMessage = errorData.data?.errors?.[0]?.message;
+
+    throw new Error(
+      validationMessage ||
+        errorData.message ||
+        'Erreur lors de la création du projet'
+    );
+  }
+
+  return data as CreateProjectResponse;
+}
 
 export async function getProjects(token: string): Promise<ProjectsResponse> {
   const response = await fetch(`${API_URL}/projects`, {
@@ -110,6 +150,22 @@ export async function getProjects(token: string): Promise<ProjectsResponse> {
 
   return data as ProjectsResponse;
 }
+
+export type CreateProjectPayload = {
+  name: string;
+  description?: string;
+  contributors?: string[];
+};
+
+export type CreatedProject = Omit<ApiProject, 'userRole'>;
+
+type CreateProjectResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    project: CreatedProject;
+  };
+};
 
 export async function getProject(
   token: string,
