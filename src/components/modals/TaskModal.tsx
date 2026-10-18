@@ -1,10 +1,14 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 
 import Modal from './Modal';
 
-import { createTask } from '@/services/projectService';
+import {
+  ApiProjectTask,
+  createTask,
+  updateTask,
+} from '@/services/projectService';
 
 import { getAuthToken } from '@/utils/authStorage';
 
@@ -24,8 +28,18 @@ type TaskModalProps = {
 
   assignees: TaskAssigneeOption[];
 
+  task?: ApiProjectTask | null;
+
   onSuccess?: () => void;
 };
+
+function getDateInputValue(date: string | null | undefined) {
+  if (!date) {
+    return '';
+  }
+
+  return new Date(date).toISOString().slice(0, 10);
+}
 
 export default function TaskModal({
   isOpen,
@@ -33,6 +47,7 @@ export default function TaskModal({
   mode,
   projectId,
   assignees,
+  task = null,
   onSuccess,
 }: TaskModalProps) {
   const isEdit = mode === 'edit';
@@ -40,6 +55,60 @@ export default function TaskModal({
   const [error, setError] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<string[]>([]);
+
+  /*
+   * À chaque ouverture de la modale :
+   *
+   * - en modification, on récupère les utilisateurs
+   *   déjà assignés à la tâche ;
+   *
+   * - en création, si une seule personne peut être
+   *   assignée, elle est sélectionnée automatiquement ;
+   *
+   * - sinon aucune personne n'est sélectionnée.
+   */
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    if (isEdit && task) {
+      setSelectedAssigneeIds(
+        task.assignees.map((assignee) => assignee.user.id)
+      );
+
+      return;
+    }
+
+    if (assignees.length === 1) {
+      setSelectedAssigneeIds([assignees[0].id]);
+
+      return;
+    }
+
+    setSelectedAssigneeIds([]);
+  }, [isOpen, isEdit, task, assignees]);
+
+  /*
+   * Ajoute ou retire un utilisateur de la sélection.
+   *
+   * Un clic :
+   * utilisateur non sélectionné -> sélectionné
+   *
+   * Un second clic :
+   * utilisateur sélectionné -> retiré
+   */
+  const toggleAssignee = (userId: string) => {
+    setSelectedAssigneeIds((current) => {
+      if (current.includes(userId)) {
+        return current.filter((id) => id !== userId);
+      }
+
+      return [...current, userId];
+    });
+  };
 
   const handleClose = () => {
     if (isLoading) {
@@ -53,10 +122,6 @@ export default function TaskModal({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (isEdit) {
-      return;
-    }
 
     setError('');
 
@@ -74,6 +139,12 @@ export default function TaskModal({
       return;
     }
 
+    if (isEdit && !task) {
+      setError('Tâche introuvable.');
+
+      return;
+    }
+
     const form = event.currentTarget;
 
     const formData = new FormData(form);
@@ -87,10 +158,22 @@ export default function TaskModal({
     const priority = String(formData.get('priority') ?? 'MEDIUM') as
       'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
+    /*
+     * Chaque checkbox cochée possède :
+     *
+     * name="assignees"
+     * value="<id utilisateur>"
+     *
+     * FormData récupère donc uniquement
+     * les utilisateurs actuellement sélectionnés.
+     */
     const assigneeIds = formData
       .getAll('assignees')
       .map((id) => String(id))
       .filter(Boolean);
+
+    const status = String(formData.get('status') ?? 'TODO') as
+      'TODO' | 'IN_PROGRESS' | 'DONE';
 
     if (!title) {
       setError('Le titre de la tâche est obligatoire.');
@@ -107,19 +190,49 @@ export default function TaskModal({
     setIsLoading(true);
 
     try {
-      await createTask(token, projectId, {
-        title,
+      if (isEdit && task) {
+        await updateTask(token, projectId, task.id, {
+          title,
 
-        description: description || undefined,
+          /*
+           * Une chaîne vide permet de supprimer
+           * la description existante.
+           */
+          description,
 
-        priority,
+          priority,
 
-        dueDate: dueDate || undefined,
+          status,
 
-        assigneeIds: assigneeIds.length > 0 ? assigneeIds : undefined,
-      });
+          /*
+           * Une chaîne vide permet de supprimer
+           * l'échéance existante.
+           */
+          dueDate,
+
+          /*
+           * Un tableau vide permet également de
+           * retirer tous les utilisateurs assignés.
+           */
+          assigneeIds,
+        });
+      } else {
+        await createTask(token, projectId, {
+          title,
+
+          description: description || undefined,
+
+          priority,
+
+          dueDate: dueDate || undefined,
+
+          assigneeIds: assigneeIds.length > 0 ? assigneeIds : undefined,
+        });
+      }
 
       form.reset();
+
+      setSelectedAssigneeIds([]);
 
       setError('');
 
@@ -140,11 +253,15 @@ export default function TaskModal({
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
       <div className={styles.formModal}>
-        <h2>{isEdit ? 'Modifier' : 'Créer une tâche'}</h2>
+        <h2>{isEdit ? 'Modifier la tâche' : 'Créer une tâche'}</h2>
 
         <form onSubmit={handleSubmit}>
+          {/* -------------------------------------------------------------- */}
+          {/*                              TITRE                             */}
+          {/* -------------------------------------------------------------- */}
+
           <div className={styles.field}>
-            <label htmlFor="task-title">{isEdit ? 'Titre' : 'Titre*'}</label>
+            <label htmlFor="task-title">Titre*</label>
 
             <input
               id="task-title"
@@ -152,10 +269,14 @@ export default function TaskModal({
               type="text"
               minLength={2}
               maxLength={200}
-              required={!isEdit}
-              defaultValue={isEdit ? 'Authentification JWT' : ''}
+              required
+              defaultValue={isEdit ? (task?.title ?? '') : ''}
             />
           </div>
+
+          {/* -------------------------------------------------------------- */}
+          {/*                          DESCRIPTION                           */}
+          {/* -------------------------------------------------------------- */}
 
           <div className={styles.field}>
             <label htmlFor="task-description">Description</label>
@@ -165,58 +286,100 @@ export default function TaskModal({
               name="description"
               type="text"
               maxLength={1000}
-              defaultValue={
-                isEdit
-                  ? "Implémenter le système d'authentification avec tokens JWT"
-                  : ''
-              }
+              defaultValue={isEdit ? (task?.description ?? '') : ''}
             />
           </div>
+
+          {/* -------------------------------------------------------------- */}
+          {/*                            ÉCHÉANCE                            */}
+          {/* -------------------------------------------------------------- */}
 
           <div className={styles.field}>
             <label htmlFor="task-date">Échéance</label>
 
-            <input id="task-date" name="dueDate" type="date" />
+            <input
+              id="task-date"
+              name="dueDate"
+              type="date"
+              defaultValue={isEdit ? getDateInputValue(task?.dueDate) : ''}
+            />
           </div>
 
-          {!isEdit && (
-            <div className={styles.field}>
-              <label htmlFor="task-priority">Priorité</label>
-
-              <select id="task-priority" name="priority" defaultValue="MEDIUM">
-                <option value="LOW">Faible</option>
-
-                <option value="MEDIUM">Moyenne</option>
-
-                <option value="HIGH">Haute</option>
-
-                <option value="URGENT">Urgente</option>
-              </select>
-            </div>
-          )}
+          {/* -------------------------------------------------------------- */}
+          {/*                            PRIORITÉ                            */}
+          {/* -------------------------------------------------------------- */}
 
           <div className={styles.field}>
-            <label htmlFor="task-assignees">Assigné à :</label>
+            <label htmlFor="task-priority">Priorité</label>
 
             <select
-              id="task-assignees"
-              name="assignees"
-              className={styles.multiSelect}
-              multiple
-              size={Math.min(Math.max(assignees.length, 2), 5)}
-              defaultValue={assignees.length === 1 ? [assignees[0].id] : []}
+              id="task-priority"
+              name="priority"
+              defaultValue={isEdit ? (task?.priority ?? 'MEDIUM') : 'MEDIUM'}
             >
-              {assignees.map((assignee) => (
-                <option key={assignee.id} value={assignee.id}>
-                  {assignee.name}
-                </option>
-              ))}
+              <option value="LOW">Faible</option>
+
+              <option value="MEDIUM">Moyenne</option>
+
+              <option value="HIGH">Haute</option>
+
+              <option value="URGENT">Urgente</option>
             </select>
+          </div>
+
+          {/* -------------------------------------------------------------- */}
+          {/*                            ASSIGNÉS                            */}
+          {/* -------------------------------------------------------------- */}
+
+          <fieldset className={styles.assigneesField}>
+            <legend>Assigné à :</legend>
+
+            {assignees.length === 0 ? (
+              <p className={styles.noAssignees}>
+                Aucun utilisateur disponible.
+              </p>
+            ) : (
+              <div className={styles.assigneesList}>
+                {assignees.map((assignee) => {
+                  const isSelected = selectedAssigneeIds.includes(assignee.id);
+
+                  return (
+                    <label
+                      key={assignee.id}
+                      className={`${styles.assigneeOption} ${
+                        isSelected ? styles.assigneeOptionSelected : ''
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        name="assignees"
+                        value={assignee.id}
+                        checked={isSelected}
+                        onChange={() => toggleAssignee(assignee.id)}
+                      />
+
+                      <span className={styles.assigneeCheckbox}>
+                        {isSelected ? '✓' : ''}
+                      </span>
+
+                      <span className={styles.assigneeName}>
+                        {assignee.name}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
 
             <span className={styles.fieldHint}>
-              Vous pouvez sélectionner plusieurs collaborateurs.
+              Cliquez sur un utilisateur pour l'ajouter ou le retirer de la
+              tâche.
             </span>
-          </div>
+          </fieldset>
+
+          {/* -------------------------------------------------------------- */}
+          {/*                     STATUT - CRÉATION                          */}
+          {/* -------------------------------------------------------------- */}
 
           {!isEdit && (
             <fieldset className={styles.statusField}>
@@ -230,6 +393,10 @@ export default function TaskModal({
             </fieldset>
           )}
 
+          {/* -------------------------------------------------------------- */}
+          {/*                    STATUT - MODIFICATION                        */}
+          {/* -------------------------------------------------------------- */}
+
           {isEdit && (
             <fieldset className={styles.statusField}>
               <legend>Statut :</legend>
@@ -239,24 +406,38 @@ export default function TaskModal({
                   <input
                     type="radio"
                     name="status"
-                    value="todo"
-                    defaultChecked
+                    value="TODO"
+                    defaultChecked={task?.status === 'TODO'}
                   />
                   À faire
                 </label>
 
                 <label className={`${styles.status} ${styles.inProgress}`}>
-                  <input type="radio" name="status" value="in-progress" />
+                  <input
+                    type="radio"
+                    name="status"
+                    value="IN_PROGRESS"
+                    defaultChecked={task?.status === 'IN_PROGRESS'}
+                  />
                   En cours
                 </label>
 
                 <label className={`${styles.status} ${styles.done}`}>
-                  <input type="radio" name="status" value="done" />
+                  <input
+                    type="radio"
+                    name="status"
+                    value="DONE"
+                    defaultChecked={task?.status === 'DONE'}
+                  />
                   Terminée
                 </label>
               </div>
             </fieldset>
           )}
+
+          {/* -------------------------------------------------------------- */}
+          {/*                             ERREUR                             */}
+          {/* -------------------------------------------------------------- */}
 
           {error && (
             <p className={styles.errorMessage} role="alert">
@@ -264,13 +445,19 @@ export default function TaskModal({
             </p>
           )}
 
+          {/* -------------------------------------------------------------- */}
+          {/*                             SUBMIT                             */}
+          {/* -------------------------------------------------------------- */}
+
           <button
             type="submit"
             className={styles.submitButton}
-            disabled={isLoading || isEdit}
+            disabled={isLoading}
           >
             {isLoading
-              ? 'Création...'
+              ? isEdit
+                ? 'Modification...'
+                : 'Création...'
               : isEdit
                 ? 'Enregistrer'
                 : '+ Ajouter une tâche'}

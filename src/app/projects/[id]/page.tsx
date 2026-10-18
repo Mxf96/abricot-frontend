@@ -158,6 +158,10 @@ export default function SingleProjectPage() {
 
   const [tasks, setTasks] = useState<DisplayTask[]>([]);
 
+  const [apiTasks, setApiTasks] = useState<ApiProjectTask[]>([]);
+
+  const [selectedTask, setSelectedTask] = useState<ApiProjectTask | null>(null);
+
   const [isProjectLoading, setIsProjectLoading] = useState(true);
 
   const [projectError, setProjectError] = useState('');
@@ -232,6 +236,8 @@ export default function SingleProjectPage() {
         if (!isCancelled) {
           setProject(projectResponse.data.project);
 
+          setApiTasks(sortedTasks);
+
           setTasks(transformedTasks);
         }
       } catch (error) {
@@ -291,6 +297,18 @@ export default function SingleProjectPage() {
         })),
       ]
     : [];
+
+  const handleEditTask = (taskId: string) => {
+    const taskToEdit = apiTasks.find((task) => task.id === taskId);
+
+    if (!taskToEdit) {
+      return;
+    }
+
+    setSelectedTask(taskToEdit);
+
+    setIsEditTaskOpen(true);
+  };
 
   return (
     <ProtectedRoute>
@@ -453,7 +471,7 @@ export default function SingleProjectPage() {
                     <ProjectTaskCard
                       key={task.id}
                       {...task}
-                      onEdit={() => setIsEditTaskOpen(true)}
+                      onEdit={() => handleEditTask(task.id)}
                     />
                   ))
                 )}
@@ -467,6 +485,8 @@ export default function SingleProjectPage() {
         isOpen={isEditProjectOpen}
         onClose={() => setIsEditProjectOpen(false)}
         mode="edit"
+        project={project}
+        onSuccess={() => setProjectRefreshKey((current) => current + 1)}
       />
 
       <TaskModal
@@ -480,10 +500,15 @@ export default function SingleProjectPage() {
 
       <TaskModal
         isOpen={isEditTaskOpen}
-        onClose={() => setIsEditTaskOpen(false)}
+        onClose={() => {
+          setIsEditTaskOpen(false);
+          setSelectedTask(null);
+        }}
         mode="edit"
         projectId={projectId}
         assignees={taskAssigneeOptions}
+        task={selectedTask}
+        onSuccess={() => setProjectRefreshKey((current) => current + 1)}
       />
 
       <AITaskModal isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />

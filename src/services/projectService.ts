@@ -1,5 +1,9 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+/* -------------------------------------------------------------------------- */
+/*                                   TYPES                                    */
+/* -------------------------------------------------------------------------- */
+
 export type ProjectUser = {
   id: string;
   email: string;
@@ -24,9 +28,11 @@ export type ApiProject = {
   ownerId: string;
   owner: ProjectUser;
   members: ProjectMember[];
+
   _count: {
     tasks: number;
   };
+
   userRole: 'ADMIN' | 'CONTRIBUTOR' | null;
 };
 
@@ -48,11 +54,16 @@ export type ApiProjectTask = {
   id: string;
   title: string;
   description: string | null;
+
   status: 'TODO' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED';
+
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
   dueDate: string | null;
+
   createdAt: string;
   updatedAt: string;
+
   assignees: ApiTaskAssignee[];
   comments: ApiTaskComment[];
 };
@@ -61,9 +72,68 @@ export type ApiProjectDetails = ApiProject & {
   tasks: ApiProjectTask[];
 };
 
+/* -------------------------------------------------------------------------- */
+/*                              PROJECT PAYLOADS                              */
+/* -------------------------------------------------------------------------- */
+
+export type CreateProjectPayload = {
+  name: string;
+  description?: string;
+  contributors?: string[];
+};
+
+export type UpdateProjectPayload = {
+  name?: string;
+  description?: string;
+};
+
+export type CreatedProject = Omit<ApiProject, 'userRole'>;
+
+/* -------------------------------------------------------------------------- */
+/*                            CONTRIBUTOR PAYLOADS                            */
+/* -------------------------------------------------------------------------- */
+
+export type ContributorRole = 'ADMIN' | 'CONTRIBUTOR';
+
+export type AddContributorPayload = {
+  email: string;
+  role?: ContributorRole;
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                TASK PAYLOADS                               */
+/* -------------------------------------------------------------------------- */
+
+export type CreateTaskPayload = {
+  title: string;
+  description?: string;
+
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
+  dueDate?: string;
+  assigneeIds?: string[];
+};
+
+export type UpdateTaskPayload = {
+  title?: string;
+  description?: string;
+
+  status?: 'TODO' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED';
+
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+
+  dueDate?: string;
+  assigneeIds?: string[];
+};
+
+/* -------------------------------------------------------------------------- */
+/*                              RESPONSE TYPES                                */
+/* -------------------------------------------------------------------------- */
+
 type ProjectsResponse = {
   success: boolean;
   message: string;
+
   data: {
     projects: ApiProject[];
   };
@@ -72,6 +142,7 @@ type ProjectsResponse = {
 type ProjectResponse = {
   success: boolean;
   message: string;
+
   data: {
     project: ApiProjectDetails;
   };
@@ -80,9 +151,51 @@ type ProjectResponse = {
 type ProjectTasksResponse = {
   success: boolean;
   message: string;
+
   data: {
     tasks: ApiProjectTask[];
   };
+};
+
+type CreateProjectResponse = {
+  success: boolean;
+  message: string;
+
+  data: {
+    project: CreatedProject;
+  };
+};
+
+type UpdateProjectResponse = {
+  success: boolean;
+  message: string;
+
+  data: {
+    project: CreatedProject;
+  };
+};
+
+type CreateTaskResponse = {
+  success: boolean;
+  message: string;
+
+  data: {
+    task: ApiProjectTask;
+  };
+};
+
+type UpdateTaskResponse = {
+  success: boolean;
+  message: string;
+
+  data: {
+    task: ApiProjectTask;
+  };
+};
+
+type ContributorActionResponse = {
+  success: boolean;
+  message: string;
 };
 
 type ApiValidationError = {
@@ -94,10 +207,15 @@ type ApiErrorResponse = {
   success: false;
   message: string;
   error?: string;
+
   data?: {
     errors?: ApiValidationError[];
   };
 };
+
+/* -------------------------------------------------------------------------- */
+/*                              PROJECT CREATE                                */
+/* -------------------------------------------------------------------------- */
 
 export async function createProject(
   token: string,
@@ -108,6 +226,7 @@ export async function createProject(
 
     headers: {
       'Content-Type': 'application/json',
+
       Authorization: `Bearer ${token}`,
     },
 
@@ -131,21 +250,123 @@ export async function createProject(
   return data as CreateProjectResponse;
 }
 
-export type CreateTaskPayload = {
-  title: string;
-  description?: string;
-  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
-  dueDate?: string;
-  assigneeIds?: string[];
-};
+/* -------------------------------------------------------------------------- */
+/*                              PROJECT UPDATE                                */
+/* -------------------------------------------------------------------------- */
 
-type CreateTaskResponse = {
-  success: boolean;
-  message: string;
-  data: {
-    task: ApiProjectTask;
-  };
-};
+export async function updateProject(
+  token: string,
+  projectId: string,
+  payload: UpdateProjectPayload
+): Promise<UpdateProjectResponse> {
+  const response = await fetch(`${API_URL}/projects/${projectId}`, {
+    method: 'PUT',
+
+    headers: {
+      'Content-Type': 'application/json',
+
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: JSON.stringify(payload),
+  });
+
+  const data: UpdateProjectResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    const validationMessage = errorData.data?.errors?.[0]?.message;
+
+    throw new Error(
+      validationMessage ||
+        errorData.message ||
+        'Erreur lors de la modification du projet'
+    );
+  }
+
+  return data as UpdateProjectResponse;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                           PROJECT CONTRIBUTORS                             */
+/* -------------------------------------------------------------------------- */
+
+export async function addContributor(
+  token: string,
+  projectId: string,
+  payload: AddContributorPayload
+): Promise<ContributorActionResponse> {
+  const response = await fetch(
+    `${API_URL}/projects/${projectId}/contributors`,
+    {
+      method: 'POST',
+
+      headers: {
+        'Content-Type': 'application/json',
+
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const data: ContributorActionResponse | ApiErrorResponse =
+    await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    const validationMessage = errorData.data?.errors?.[0]?.message;
+
+    throw new Error(
+      validationMessage ||
+        errorData.message ||
+        "Erreur lors de l'ajout du contributeur"
+    );
+  }
+
+  return data as ContributorActionResponse;
+}
+
+export async function removeContributor(
+  token: string,
+  projectId: string,
+  userId: string
+): Promise<ContributorActionResponse> {
+  const response = await fetch(
+    `${API_URL}/projects/${projectId}/contributors/${userId}`,
+    {
+      method: 'DELETE',
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data: ContributorActionResponse | ApiErrorResponse =
+    await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    const validationMessage = errorData.data?.errors?.[0]?.message;
+
+    throw new Error(
+      validationMessage ||
+        errorData.message ||
+        'Erreur lors de la suppression du contributeur'
+    );
+  }
+
+  return data as ContributorActionResponse;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                TASK CREATE                                 */
+/* -------------------------------------------------------------------------- */
 
 export async function createTask(
   token: string,
@@ -157,6 +378,7 @@ export async function createTask(
 
     headers: {
       'Content-Type': 'application/json',
+
       Authorization: `Bearer ${token}`,
     },
 
@@ -180,12 +402,60 @@ export async function createTask(
   return data as CreateTaskResponse;
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                TASK UPDATE                                 */
+/* -------------------------------------------------------------------------- */
+
+export async function updateTask(
+  token: string,
+  projectId: string,
+  taskId: string,
+  payload: UpdateTaskPayload
+): Promise<UpdateTaskResponse> {
+  const response = await fetch(
+    `${API_URL}/projects/${projectId}/tasks/${taskId}`,
+    {
+      method: 'PUT',
+
+      headers: {
+        'Content-Type': 'application/json',
+
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify(payload),
+    }
+  );
+
+  const data: UpdateTaskResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    const validationMessage = errorData.data?.errors?.[0]?.message;
+
+    throw new Error(
+      validationMessage ||
+        errorData.message ||
+        'Erreur lors de la modification de la tâche'
+    );
+  }
+
+  return data as UpdateTaskResponse;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              PROJECTS GET                                  */
+/* -------------------------------------------------------------------------- */
+
 export async function getProjects(token: string): Promise<ProjectsResponse> {
   const response = await fetch(`${API_URL}/projects`, {
     method: 'GET',
+
     headers: {
       Authorization: `Bearer ${token}`,
     },
+
     cache: 'no-store',
   });
 
@@ -200,21 +470,9 @@ export async function getProjects(token: string): Promise<ProjectsResponse> {
   return data as ProjectsResponse;
 }
 
-export type CreateProjectPayload = {
-  name: string;
-  description?: string;
-  contributors?: string[];
-};
-
-export type CreatedProject = Omit<ApiProject, 'userRole'>;
-
-type CreateProjectResponse = {
-  success: boolean;
-  message: string;
-  data: {
-    project: CreatedProject;
-  };
-};
+/* -------------------------------------------------------------------------- */
+/*                               PROJECT GET                                  */
+/* -------------------------------------------------------------------------- */
 
 export async function getProject(
   token: string,
@@ -222,9 +480,11 @@ export async function getProject(
 ): Promise<ProjectResponse> {
   const response = await fetch(`${API_URL}/projects/${projectId}`, {
     method: 'GET',
+
     headers: {
       Authorization: `Bearer ${token}`,
     },
+
     cache: 'no-store',
   });
 
@@ -237,15 +497,21 @@ export async function getProject(
   return data as ProjectResponse;
 }
 
+/* -------------------------------------------------------------------------- */
+/*                              PROJECT TASKS GET                             */
+/* -------------------------------------------------------------------------- */
+
 export async function getProjectTasks(
   token: string,
   projectId: string
 ): Promise<ProjectTasksResponse> {
   const response = await fetch(`${API_URL}/projects/${projectId}/tasks`, {
     method: 'GET',
+
     headers: {
       Authorization: `Bearer ${token}`,
     },
+
     cache: 'no-store',
   });
 

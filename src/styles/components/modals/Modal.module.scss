@@ -1,5 +1,9 @@
 @use '../../variables' as *;
 
+/* ======================================================
+   MODAL - BASE
+   ====================================================== */
+
 .overlay {
   position: fixed;
   z-index: 1000;
@@ -114,8 +118,204 @@
   }
 }
 
+.fieldHint {
+  color: #737d8d;
+
+  font-size: 12px;
+}
+
 /* ======================================================
-   STATUS
+   TASK ASSIGNEES
+   ====================================================== */
+
+.assigneesField {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 0;
+
+  border: 0;
+
+  legend {
+    margin-bottom: 7px;
+
+    font-size: 14px;
+  }
+}
+
+.assigneesList {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  max-height: 180px;
+
+  overflow-y: auto;
+}
+
+.assigneeOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-height: 46px;
+
+  padding: 8px 14px;
+
+  border: 1px solid #d9dee5;
+  border-radius: 6px;
+
+  color: #737d8d;
+  background: #ffffff;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+
+  input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    opacity: 0;
+  }
+
+  &:hover {
+    border-color: $color-primary;
+  }
+
+  &:focus-within {
+    border-color: $color-primary;
+  }
+}
+
+.assigneeOptionSelected {
+  border-color: $color-primary;
+
+  background: rgba($color-primary, 0.08);
+
+  color: #202020;
+}
+
+.assigneeCheckbox {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  border: 1px solid #d9dee5;
+  border-radius: 5px;
+
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.assigneeOptionSelected {
+  .assigneeCheckbox {
+    border-color: $color-primary;
+
+    background: $color-primary;
+  }
+}
+
+.assigneeName {
+  font-size: 14px;
+}
+
+.noAssignees {
+  margin: 0;
+
+  color: #737d8d;
+
+  font-size: 13px;
+}
+
+/* ======================================================
+   FORM MESSAGES
+   ====================================================== */
+
+.errorMessage {
+  margin: 0;
+
+  color: #c62828;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.successMessage {
+  margin: 0;
+
+  color: #2e7d32;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ======================================================
+   FORM BUTTONS
+   ====================================================== */
+
+.submitButton {
+  align-self: flex-start;
+
+  min-width: 181px;
+  height: 51px;
+
+  margin-top: 28px;
+
+  padding: 0 17px;
+
+  border: 0;
+  border-radius: 9px;
+
+  color: #ffffff;
+  background: #202020;
+
+  font-size: 16px;
+
+  cursor: pointer;
+
+  &:disabled {
+    color: #a7aebb;
+    background: #e3e6eb;
+
+    cursor: not-allowed;
+  }
+}
+
+.disabledButton {
+  align-self: flex-start;
+
+  min-width: 181px;
+  height: 51px;
+
+  margin-top: 28px;
+
+  padding: 0 17px;
+
+  border: 0;
+  border-radius: 9px;
+
+  color: #a7aebb;
+  background: #e3e6eb;
+
+  font-size: 16px;
+
+  cursor: pointer;
+}
+
+/* ======================================================
+   TASK STATUS
    ====================================================== */
 
 .statusField {
@@ -176,32 +376,211 @@
 }
 
 /* ======================================================
-   BUTTON
+   PROJECT CONTRIBUTORS
    ====================================================== */
 
-.disabledButton {
-  align-self: flex-start;
+.contributorsField {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 
-  min-width: 181px;
-  height: 51px;
+  > label {
+    font-size: 14px;
+  }
+}
 
-  margin-top: 28px;
+.contributorsDetails {
+  position: relative;
 
-  padding: 0 17px;
+  width: 100%;
 
-  border: 0;
-  border-radius: 9px;
+  border: 1px solid #d9dee5;
+  border-radius: 4px;
 
-  color: #a7aebb;
-  background: #e3e6eb;
+  background: #ffffff;
 
-  font-size: 16px;
+  &[open] {
+    border-color: $color-primary;
+  }
 
-  cursor: pointer;
+  summary {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    height: 54px;
+
+    padding: 0 48px 0 16px;
+
+    color: #737d8d;
+
+    cursor: pointer;
+
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::after {
+      content: '';
+
+      position: absolute;
+      top: 19px;
+      right: 18px;
+
+      width: 10px;
+      height: 10px;
+
+      border-right: 1px solid #202020;
+      border-bottom: 1px solid #202020;
+
+      transform: rotate(45deg);
+
+      transition: transform 0.2s ease;
+    }
+  }
+
+  &[open] {
+    summary {
+      &::after {
+        top: 23px;
+
+        transform: rotate(225deg);
+      }
+    }
+  }
+}
+
+.contributorsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  padding: 16px;
+
+  border-top: 1px solid #d9dee5;
+}
+
+.contributorsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contributorItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  padding-bottom: 10px;
+
+  border-bottom: 1px solid #eeeeee;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  strong {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  span,
+  small {
+    color: #737d8d;
+
+    font-size: 12px;
+  }
+}
+
+.noContributors {
+  margin: 0;
+
+  color: #737d8d;
+
+  font-size: 13px;
 }
 
 /* ======================================================
-   IA - GENERATION
+   PROJECT CONTRIBUTORS - ACTIONS
+   ====================================================== */
+
+.removeContributorButton {
+  padding: 0;
+
+  border: 0;
+
+  color: #dc3545;
+  background: transparent;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+  }
+}
+
+.addContributor {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  gap: 8px;
+
+  input,
+  select {
+    height: 42px;
+
+    padding: 0 12px;
+
+    border: 1px solid #d9dee5;
+    border-radius: 4px;
+
+    background: #ffffff;
+
+    font: inherit;
+
+    outline: none;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+  }
+
+  select {
+    cursor: pointer;
+  }
+}
+
+.addContributorButton {
+  grid-column: 1 / -1;
+
+  height: 40px;
+
+  border: 0;
+  border-radius: 6px;
+
+  color: #ffffff;
+  background: #202020;
+
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+  }
+}
+
+/* ======================================================
+   AI - GENERATION
    ====================================================== */
 
 .aiModal {
@@ -275,7 +654,7 @@
 }
 
 /* ======================================================
-   IA - LISTE
+   AI - TASK LIST
    ====================================================== */
 
 .aiListModal {
@@ -294,6 +673,12 @@
 
     font-size: 26px;
     font-weight: 500;
+  }
+
+  .aiPrompt {
+    right: 52px;
+    bottom: 38px;
+    left: 52px;
   }
 }
 
@@ -374,78 +759,6 @@
   cursor: pointer;
 }
 
-.aiListModal .aiPrompt {
-  right: 52px;
-  bottom: 38px;
-  left: 52px;
-}
-
-/* ======================================================
-   success or error message
-   ====================================================== */
-.errorMessage {
-  margin: 0;
-
-  color: #c62828;
-
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.successMessage {
-  margin: 0;
-
-  color: #2e7d32;
-
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.fieldHint {
-  color: #737d8d;
-
-  font-size: 12px;
-}
-
-.submitButton {
-  align-self: flex-start;
-
-  min-width: 181px;
-  height: 51px;
-
-  margin-top: 28px;
-
-  padding: 0 17px;
-
-  border: 0;
-  border-radius: 9px;
-
-  color: #ffffff;
-  background: #202020;
-
-  font-size: 16px;
-
-  cursor: pointer;
-
-  &:disabled {
-    color: #a7aebb;
-    background: #e3e6eb;
-
-    cursor: not-allowed;
-  }
-}
-
-.multiSelect {
-  height: auto !important;
-  min-height: 90px;
-
-  padding: 8px 16px !important;
-
-  option {
-    padding: 6px 0;
-  }
-}
-
 /* ======================================================
    RESPONSIVE
    ====================================================== */
@@ -463,6 +776,18 @@
     padding: 75px 25px 40px;
   }
 
+  .statusList {
+    flex-wrap: wrap;
+  }
+
+  .addContributor {
+    grid-template-columns: 1fr;
+  }
+
+  .addContributorButton {
+    grid-column: auto;
+  }
+
   .aiModal,
   .aiListModal {
     padding-right: 25px;
@@ -473,9 +798,5 @@
   .aiListModal .aiPrompt {
     right: 25px;
     left: 25px;
-  }
-
-  .statusList {
-    flex-wrap: wrap;
   }
 }

@@ -4,7 +4,14 @@ import { FormEvent, useState } from 'react';
 
 import Modal from './Modal';
 
-import { createProject } from '@/services/projectService';
+import {
+  ApiProjectDetails,
+  ContributorRole,
+  addContributor,
+  createProject,
+  removeContributor,
+  updateProject,
+} from '@/services/projectService';
 
 import { getAuthToken } from '@/utils/authStorage';
 
@@ -13,7 +20,11 @@ import styles from '@/styles/components/modals/Modal.module.scss';
 type ProjectModalProps = {
   isOpen: boolean;
   onClose: () => void;
+
   mode: 'create' | 'edit';
+
+  project?: ApiProjectDetails | null;
+
   onSuccess?: () => void;
 };
 
@@ -21,6 +32,7 @@ export default function ProjectModal({
   isOpen,
   onClose,
   mode,
+  project = null,
   onSuccess,
 }: ProjectModalProps) {
   const isEdit = mode === 'edit';
@@ -29,21 +41,119 @@ export default function ProjectModal({
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [contributorEmail, setContributorEmail] = useState('');
+
+  const [contributorRole, setContributorRole] =
+    useState<ContributorRole>('CONTRIBUTOR');
+
+  const [contributorError, setContributorError] = useState('');
+
+  const [isContributorLoading, setIsContributorLoading] = useState(false);
+
   const handleClose = () => {
-    if (isLoading) {
+    if (isLoading || isContributorLoading) {
       return;
     }
 
     setError('');
+    setContributorError('');
+    setContributorEmail('');
+    setContributorRole('CONTRIBUTOR');
+
     onClose();
+  };
+
+  const handleAddContributor = async () => {
+    if (!project) {
+      setContributorError('Projet introuvable.');
+
+      return;
+    }
+
+    const email = contributorEmail.trim().toLowerCase();
+
+    if (!email) {
+      setContributorError("L'adresse email est obligatoire.");
+
+      return;
+    }
+
+    const token = getAuthToken();
+
+    if (!token) {
+      setContributorError('Session utilisateur introuvable.');
+
+      return;
+    }
+
+    setContributorError('');
+    setIsContributorLoading(true);
+
+    try {
+      await addContributor(token, project.id, {
+        email,
+        role: contributorRole,
+      });
+
+      setContributorEmail('');
+      setContributorRole('CONTRIBUTOR');
+
+      /*
+       * Le parent recharge le projet.
+       * La modale reste ouverte et reçoit ensuite
+       * la nouvelle liste des contributeurs.
+       */
+      onSuccess?.();
+    } catch (error) {
+      if (error instanceof Error) {
+        setContributorError(error.message);
+      } else {
+        setContributorError('Une erreur est survenue.');
+      }
+    } finally {
+      setIsContributorLoading(false);
+    }
+  };
+
+  const handleRemoveContributor = async (userId: string) => {
+    if (!project) {
+      setContributorError('Projet introuvable.');
+
+      return;
+    }
+
+    const token = getAuthToken();
+
+    if (!token) {
+      setContributorError('Session utilisateur introuvable.');
+
+      return;
+    }
+
+    setContributorError('');
+    setIsContributorLoading(true);
+
+    try {
+      await removeContributor(token, project.id, userId);
+
+      /*
+       * Recharge le projet afin de mettre
+       * immédiatement la liste à jour.
+       */
+      onSuccess?.();
+    } catch (error) {
+      if (error instanceof Error) {
+        setContributorError(error.message);
+      } else {
+        setContributorError('Une erreur est survenue.');
+      }
+    } finally {
+      setIsContributorLoading(false);
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    if (isEdit) {
-      return;
-    }
 
     setError('');
 
@@ -51,6 +161,12 @@ export default function ProjectModal({
 
     if (!token) {
       setError('Session utilisateur introuvable.');
+
+      return;
+    }
+
+    if (isEdit && !project) {
+      setError('Projet introuvable.');
 
       return;
     }
@@ -63,35 +179,49 @@ export default function ProjectModal({
 
     const description = String(formData.get('description') ?? '').trim();
 
-    const contributorsValue = String(formData.get('contributors') ?? '').trim();
-
-    const contributors = contributorsValue
-      ? contributorsValue
-          .split(',')
-          .map((email) => email.trim())
-          .filter(Boolean)
-      : [];
-
     if (!name) {
       setError('Le nom du projet est obligatoire.');
 
       return;
     }
 
+    /*
+     * Ce champ existe uniquement lors
+     * de la création du projet.
+     */
+    const contributorsValue = String(formData.get('contributors') ?? '').trim();
+
+    const contributors = contributorsValue
+      ? contributorsValue
+          .split(',')
+          .map((email) => email.trim().toLowerCase())
+          .filter(Boolean)
+      : [];
+
     setIsLoading(true);
 
     try {
-      await createProject(token, {
-        name,
+      if (isEdit && project) {
+        await updateProject(token, project.id, {
+          name,
+          description,
+        });
+      } else {
+        await createProject(token, {
+          name,
 
-        description: description || undefined,
+          description: description || undefined,
 
-        contributors: contributors.length > 0 ? contributors : undefined,
-      });
+          contributors: contributors.length > 0 ? contributors : undefined,
+        });
+      }
 
       form.reset();
 
       setError('');
+      setContributorError('');
+      setContributorEmail('');
+      setContributorRole('CONTRIBUTOR');
 
       onClose();
 
@@ -120,10 +250,10 @@ export default function ProjectModal({
               id="project-title"
               name="name"
               type="text"
-              defaultValue={isEdit ? 'Input' : ''}
               minLength={2}
               maxLength={100}
               required
+              defaultValue={isEdit ? (project?.name ?? '') : ''}
             />
           </div>
 
@@ -134,11 +264,15 @@ export default function ProjectModal({
               id="project-description"
               name="description"
               type="text"
-              defaultValue={isEdit ? 'Input' : ''}
               maxLength={500}
               required
+              defaultValue={isEdit ? (project?.description ?? '') : ''}
             />
           </div>
+
+          {/* -------------------------------------------------------------- */}
+          {/*                    CRÉATION DU PROJET                           */}
+          {/* -------------------------------------------------------------- */}
 
           {!isEdit && (
             <div className={styles.field}>
@@ -157,19 +291,143 @@ export default function ProjectModal({
             </div>
           )}
 
+          {/* -------------------------------------------------------------- */}
+          {/*                    MODIFICATION DU PROJET                       */}
+          {/* -------------------------------------------------------------- */}
+
+          {isEdit && project && (
+            <div className={styles.contributorsField}>
+              <label>Contributeurs</label>
+
+              <details className={styles.contributorsDetails}>
+                <summary>
+                  {project.members.length === 0
+                    ? 'Aucun collaborateur'
+                    : `${project.members.length} ${
+                        project.members.length > 1
+                          ? 'collaborateurs'
+                          : 'collaborateur'
+                      }`}
+                </summary>
+
+                <div className={styles.contributorsPanel}>
+                  {/* ------------------------------------------------------ */}
+                  {/*               CONTRIBUTEURS EXISTANTS                  */}
+                  {/* ------------------------------------------------------ */}
+
+                  {project.members.length > 0 ? (
+                    <div className={styles.contributorsList}>
+                      {project.members.map((member) => (
+                        <div key={member.id} className={styles.contributorItem}>
+                          <div>
+                            <strong>
+                              {member.user.name?.trim() || member.user.email}
+                            </strong>
+
+                            {member.user.name && (
+                              <span>{member.user.email}</span>
+                            )}
+
+                            <small>
+                              {member.role === 'ADMIN'
+                                ? 'Administrateur'
+                                : 'Contributeur'}
+                            </small>
+                          </div>
+
+                          <button
+                            type="button"
+                            className={styles.removeContributorButton}
+                            disabled={isContributorLoading}
+                            onClick={() =>
+                              handleRemoveContributor(member.user.id)
+                            }
+                          >
+                            Supprimer
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className={styles.noContributors}>
+                      Aucun contributeur pour le moment.
+                    </p>
+                  )}
+
+                  {/* ------------------------------------------------------ */}
+                  {/*                 AJOUT CONTRIBUTEUR                     */}
+                  {/* ------------------------------------------------------ */}
+
+                  <div className={styles.addContributor}>
+                    <input
+                      type="email"
+                      value={contributorEmail}
+                      onChange={(event) =>
+                        setContributorEmail(event.target.value)
+                      }
+                      placeholder="email@exemple.com"
+                      aria-label="Email du contributeur"
+                      disabled={isContributorLoading}
+                    />
+
+                    <select
+                      value={contributorRole}
+                      onChange={(event) =>
+                        setContributorRole(
+                          event.target.value as ContributorRole
+                        )
+                      }
+                      aria-label="Rôle du contributeur"
+                      disabled={isContributorLoading}
+                    >
+                      <option value="CONTRIBUTOR">Contributeur</option>
+
+                      <option value="ADMIN">Administrateur</option>
+                    </select>
+
+                    <button
+                      type="button"
+                      className={styles.addContributorButton}
+                      disabled={isContributorLoading}
+                      onClick={handleAddContributor}
+                    >
+                      {isContributorLoading ? 'Chargement...' : '+ Ajouter'}
+                    </button>
+                  </div>
+
+                  {contributorError && (
+                    <p className={styles.errorMessage} role="alert">
+                      {contributorError}
+                    </p>
+                  )}
+                </div>
+              </details>
+            </div>
+          )}
+
+          {/* -------------------------------------------------------------- */}
+          {/*                       ERREUR PROJET                             */}
+          {/* -------------------------------------------------------------- */}
+
           {error && (
             <p className={styles.errorMessage} role="alert">
               {error}
             </p>
           )}
 
+          {/* -------------------------------------------------------------- */}
+          {/*                         SUBMIT                                  */}
+          {/* -------------------------------------------------------------- */}
+
           <button
             type="submit"
             className={styles.submitButton}
-            disabled={isLoading || isEdit}
+            disabled={isLoading || isContributorLoading}
           >
             {isLoading
-              ? 'Création...'
+              ? isEdit
+                ? 'Modification...'
+                : 'Création...'
               : isEdit
                 ? 'Enregistrer'
                 : 'Ajouter un projet'}
