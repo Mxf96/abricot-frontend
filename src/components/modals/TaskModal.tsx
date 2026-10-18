@@ -58,17 +58,6 @@ export default function TaskModal({
 
   const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<string[]>([]);
 
-  /*
-   * À chaque ouverture de la modale :
-   *
-   * - en modification, on récupère les utilisateurs
-   *   déjà assignés à la tâche ;
-   *
-   * - en création, si une seule personne peut être
-   *   assignée, elle est sélectionnée automatiquement ;
-   *
-   * - sinon aucune personne n'est sélectionnée.
-   */
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -91,15 +80,6 @@ export default function TaskModal({
     setSelectedAssigneeIds([]);
   }, [isOpen, isEdit, task, assignees]);
 
-  /*
-   * Ajoute ou retire un utilisateur de la sélection.
-   *
-   * Un clic :
-   * utilisateur non sélectionné -> sélectionné
-   *
-   * Un second clic :
-   * utilisateur sélectionné -> retiré
-   */
   const toggleAssignee = (userId: string) => {
     setSelectedAssigneeIds((current) => {
       if (current.includes(userId)) {
@@ -158,15 +138,6 @@ export default function TaskModal({
     const priority = String(formData.get('priority') ?? 'MEDIUM') as
       'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
 
-    /*
-     * Chaque checkbox cochée possède :
-     *
-     * name="assignees"
-     * value="<id utilisateur>"
-     *
-     * FormData récupère donc uniquement
-     * les utilisateurs actuellement sélectionnés.
-     */
     const assigneeIds = formData
       .getAll('assignees')
       .map((id) => String(id))
@@ -193,39 +164,18 @@ export default function TaskModal({
       if (isEdit && task) {
         await updateTask(token, projectId, task.id, {
           title,
-
-          /*
-           * Une chaîne vide permet de supprimer
-           * la description existante.
-           */
           description,
-
           priority,
-
           status,
-
-          /*
-           * Une chaîne vide permet de supprimer
-           * l'échéance existante.
-           */
           dueDate,
-
-          /*
-           * Un tableau vide permet également de
-           * retirer tous les utilisateurs assignés.
-           */
           assigneeIds,
         });
       } else {
         await createTask(token, projectId, {
           title,
-
           description: description || undefined,
-
           priority,
-
           dueDate: dueDate || undefined,
-
           assigneeIds: assigneeIds.length > 0 ? assigneeIds : undefined,
         });
       }

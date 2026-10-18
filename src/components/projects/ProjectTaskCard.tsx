@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useId, useRef, useState } from 'react';
+
 import styles from '@/styles/components/projects/SingleProject.module.scss';
 
 type TaskStatus = 'todo' | 'in-progress' | 'done';
@@ -24,7 +26,10 @@ type ProjectTaskCardProps = {
   comments: number;
   assignees: TaskAssignee[];
   commentItems: TaskComment[];
+
   onEdit: () => void;
+
+  onDelete?: () => void;
 };
 
 export default function ProjectTaskCard({
@@ -36,12 +41,45 @@ export default function ProjectTaskCard({
   assignees,
   commentItems,
   onEdit,
+  onDelete,
 }: ProjectTaskCardProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const menuId = useId();
+
   const statusLabels: Record<TaskStatus, string> = {
     todo: 'À faire',
     'in-progress': 'En cours',
     done: 'Terminée',
   };
+
+  useEffect(() => {
+    if (!isMenuOpen) {
+      return;
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isMenuOpen]);
 
   const getStatusClass = () => {
     switch (status) {
@@ -59,6 +97,18 @@ export default function ProjectTaskCard({
     }
   };
 
+  const handleEdit = () => {
+    setIsMenuOpen(false);
+
+    onEdit();
+  };
+
+  const handleDelete = () => {
+    setIsMenuOpen(false);
+
+    onDelete?.();
+  };
+
   return (
     <article className={styles.taskCard}>
       <div className={styles.taskTop}>
@@ -74,21 +124,67 @@ export default function ProjectTaskCard({
           <p>{description}</p>
         </div>
 
-        <button
-          type="button"
-          className={styles.taskMenuButton}
-          aria-label={`Modifier ${title}`}
-          onClick={onEdit}
-        >
-          ...
-        </button>
+        {/* -------------------------------------------------------------- */}
+        {/*                         MENU ACTIONS                           */}
+        {/* -------------------------------------------------------------- */}
+
+        <div className={styles.taskMenuWrapper} ref={menuRef}>
+          <button
+            type="button"
+            className={styles.taskMenuButton}
+            aria-label={`Actions pour ${title}`}
+            aria-haspopup="menu"
+            aria-expanded={isMenuOpen}
+            aria-controls={menuId}
+            onClick={() => setIsMenuOpen((current) => !current)}
+          >
+            ...
+          </button>
+
+          {isMenuOpen && (
+            <div
+              id={menuId}
+              className={styles.taskMenu}
+              role="menu"
+              aria-label={`Actions pour ${title}`}
+            >
+              <button
+                type="button"
+                className={styles.taskMenuAction}
+                role="menuitem"
+                onClick={handleEdit}
+              >
+                Modifier
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.taskMenuAction} ${styles.taskDeleteAction}`}
+                role="menuitem"
+                onClick={handleDelete}
+              >
+                Supprimer
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* -------------------------------------------------------------- */}
+      {/*                            DATE                                */}
+      {/* -------------------------------------------------------------- */}
 
       <div className={styles.taskDate}>
         <span>Échéance :</span>
+
         <span>▣</span>
+
         <strong>{date}</strong>
       </div>
+
+      {/* -------------------------------------------------------------- */}
+      {/*                         ASSIGNATIONS                           */}
+      {/* -------------------------------------------------------------- */}
 
       <div className={styles.assignees}>
         <span>Assigné à :</span>
@@ -106,6 +202,10 @@ export default function ProjectTaskCard({
         )}
       </div>
 
+      {/* -------------------------------------------------------------- */}
+      {/*                         COMMENTAIRES                           */}
+      {/* -------------------------------------------------------------- */}
+
       <details className={styles.comments}>
         <summary>
           <span>Commentaires ({comments})</span>
@@ -120,7 +220,9 @@ export default function ProjectTaskCard({
             commentItems.map((comment) => (
               <p key={comment.id}>
                 <strong>{comment.author}</strong>
+
                 {' : '}
+
                 {comment.content}
               </p>
             ))

@@ -98,11 +98,6 @@ export default function ProjectModal({
       setContributorEmail('');
       setContributorRole('CONTRIBUTOR');
 
-      /*
-       * Le parent recharge le projet.
-       * La modale reste ouverte et reçoit ensuite
-       * la nouvelle liste des contributeurs.
-       */
       onSuccess?.();
     } catch (error) {
       if (error instanceof Error) {
@@ -136,10 +131,6 @@ export default function ProjectModal({
     try {
       await removeContributor(token, project.id, userId);
 
-      /*
-       * Recharge le projet afin de mettre
-       * immédiatement la liste à jour.
-       */
       onSuccess?.();
     } catch (error) {
       if (error instanceof Error) {
@@ -185,10 +176,6 @@ export default function ProjectModal({
       return;
     }
 
-    /*
-     * Ce champ existe uniquement lors
-     * de la création du projet.
-     */
     const contributorsValue = String(formData.get('contributors') ?? '').trim();
 
     const contributors = contributorsValue

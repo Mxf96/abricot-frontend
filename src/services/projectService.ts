@@ -445,6 +445,44 @@ export async function updateTask(
 }
 
 /* -------------------------------------------------------------------------- */
+/*                                TASK DELETE                                 */
+/* -------------------------------------------------------------------------- */
+
+type DeleteTaskResponse = {
+  success: boolean;
+  message: string;
+};
+
+export async function deleteTask(
+  token: string,
+  projectId: string,
+  taskId: string
+): Promise<DeleteTaskResponse> {
+  const response = await fetch(
+    `${API_URL}/projects/${projectId}/tasks/${taskId}`,
+    {
+      method: 'DELETE',
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data: DeleteTaskResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    throw new Error(
+      errorData.message || 'Erreur lors de la suppression de la tâche'
+    );
+  }
+
+  return data as DeleteTaskResponse;
+}
+
+/* -------------------------------------------------------------------------- */
 /*                              PROJECTS GET                                  */
 /* -------------------------------------------------------------------------- */
 

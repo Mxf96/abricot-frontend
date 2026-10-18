@@ -21,6 +21,7 @@ import { useAuth } from '@/context/AuthContext';
 import {
   ApiProjectDetails,
   ApiProjectTask,
+  deleteTask,
   getProject,
   getProjectTasks,
 } from '@/services/projectService';
@@ -310,6 +311,36 @@ export default function SingleProjectPage() {
     setIsEditTaskOpen(true);
   };
 
+  const handleDeleteTask = async (taskId: string, taskTitle: string) => {
+    const confirmed = window.confirm(
+      `Voulez-vous vraiment supprimer la tâche "${taskTitle}" ?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const token = getAuthToken();
+
+    if (!token) {
+      setProjectError('Session utilisateur introuvable.');
+
+      return;
+    }
+
+    try {
+      await deleteTask(token, projectId, taskId);
+
+      setProjectRefreshKey((current) => current + 1);
+    } catch (error) {
+      if (error instanceof Error) {
+        setProjectError(error.message);
+      } else {
+        setProjectError('Une erreur est survenue lors de la suppression.');
+      }
+    }
+  };
+
   return (
     <ProtectedRoute>
       <Header />
@@ -472,6 +503,7 @@ export default function SingleProjectPage() {
                       key={task.id}
                       {...task}
                       onEdit={() => handleEditTask(task.id)}
+                      onDelete={() => handleDeleteTask(task.id, task.title)}
                     />
                   ))
                 )}
