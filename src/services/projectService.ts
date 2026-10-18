@@ -517,6 +517,58 @@ export async function deleteTask(
 }
 
 /* -------------------------------------------------------------------------- */
+/*                              COMMENT CREATE                                */
+/* -------------------------------------------------------------------------- */
+
+type CreateCommentResponse = {
+  success: boolean;
+  message: string;
+
+  data: {
+    comment: ApiTaskComment;
+  };
+};
+
+export async function createTaskComment(
+  token: string,
+  projectId: string,
+  taskId: string,
+  content: string
+): Promise<CreateCommentResponse> {
+  const response = await fetch(
+    `${API_URL}/projects/${projectId}/tasks/${taskId}/comments`,
+    {
+      method: 'POST',
+
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({
+        content,
+      }),
+    }
+  );
+
+  const data: CreateCommentResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    const validationMessage = errorData.data?.errors?.[0]?.message;
+
+    throw new Error(
+      validationMessage ||
+        errorData.message ||
+        "Erreur lors de l'ajout du commentaire"
+    );
+  }
+
+  return data as CreateCommentResponse;
+}
+
+/* -------------------------------------------------------------------------- */
 /*                              PROJECTS GET                                  */
 /* -------------------------------------------------------------------------- */
 

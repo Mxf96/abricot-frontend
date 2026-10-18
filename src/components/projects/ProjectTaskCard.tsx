@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { FormEvent, useEffect, useId, useRef, useState } from 'react';
 
 import styles from '@/styles/components/projects/SingleProject.module.scss';
 
@@ -30,6 +30,8 @@ type ProjectTaskCardProps = {
   onEdit: () => void;
 
   onDelete?: () => void;
+
+  onAddComment?: (content: string) => Promise<void>;
 };
 
 export default function ProjectTaskCard({
@@ -42,18 +44,33 @@ export default function ProjectTaskCard({
   commentItems,
   onEdit,
   onDelete,
+  onAddComment,
 }: ProjectTaskCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
+
+  const [commentContent, setCommentContent] = useState('');
+
+  const [commentError, setCommentError] = useState('');
+
+  const [isCommentLoading, setIsCommentLoading] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
 
   const menuId = useId();
+
+  const commentInputId = useId();
 
   const statusLabels: Record<TaskStatus, string> = {
     todo: 'À faire',
     'in-progress': 'En cours',
     done: 'Terminée',
   };
+
+  /* -------------------------------------------------------------------------- */
+  /*                              MENU ACTIONS                                  */
+  /* -------------------------------------------------------------------------- */
 
   useEffect(() => {
     if (!isMenuOpen) {
@@ -81,6 +98,10 @@ export default function ProjectTaskCard({
     };
   }, [isMenuOpen]);
 
+  /* -------------------------------------------------------------------------- */
+  /*                                  STATUS                                    */
+  /* -------------------------------------------------------------------------- */
+
   const getStatusClass = () => {
     switch (status) {
       case 'todo':
@@ -97,11 +118,19 @@ export default function ProjectTaskCard({
     }
   };
 
+  /* -------------------------------------------------------------------------- */
+  /*                              MODIFIER TÂCHE                                */
+  /* -------------------------------------------------------------------------- */
+
   const handleEdit = () => {
     setIsMenuOpen(false);
 
     onEdit();
   };
+
+  /* -------------------------------------------------------------------------- */
+  /*                              SUPPRIMER TÂCHE                               */
+  /* -------------------------------------------------------------------------- */
 
   const handleDelete = () => {
     setIsMenuOpen(false);
@@ -109,8 +138,84 @@ export default function ProjectTaskCard({
     onDelete?.();
   };
 
+  /* -------------------------------------------------------------------------- */
+  /*                         OUVRIR COMMENTAIRE                                 */
+  /* -------------------------------------------------------------------------- */
+
+  const handleOpenCommentForm = () => {
+    setIsMenuOpen(false);
+
+    setCommentError('');
+
+    setIsCommentFormOpen(true);
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                         FERMER COMMENTAIRE                                 */
+  /* -------------------------------------------------------------------------- */
+
+  const handleCloseCommentForm = () => {
+    if (isCommentLoading) {
+      return;
+    }
+
+    setCommentContent('');
+
+    setCommentError('');
+
+    setIsCommentFormOpen(false);
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                         AJOUTER COMMENTAIRE                                */
+  /* -------------------------------------------------------------------------- */
+
+  const handleAddComment = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    setCommentError('');
+
+    const content = commentContent.trim();
+
+    if (!content) {
+      setCommentError('Le commentaire ne peut pas être vide.');
+
+      return;
+    }
+
+    if (!onAddComment) {
+      setCommentError("L'ajout de commentaire n'est pas encore disponible.");
+
+      return;
+    }
+
+    setIsCommentLoading(true);
+
+    try {
+      await onAddComment(content);
+
+      setCommentContent('');
+
+      setIsCommentFormOpen(false);
+    } catch (error) {
+      if (error instanceof Error) {
+        setCommentError(error.message);
+      } else {
+        setCommentError(
+          "Une erreur est survenue lors de l'ajout du commentaire."
+        );
+      }
+    } finally {
+      setIsCommentLoading(false);
+    }
+  };
+
   return (
     <article className={styles.taskCard}>
+      {/* -------------------------------------------------------------------- */}
+      {/*                              HEADER                                  */}
+      {/* -------------------------------------------------------------------- */}
+
       <div className={styles.taskTop}>
         <div className={styles.taskMain}>
           <div className={styles.taskTitle}>
@@ -124,9 +229,9 @@ export default function ProjectTaskCard({
           <p>{description}</p>
         </div>
 
-        {/* -------------------------------------------------------------- */}
-        {/*                         MENU ACTIONS                           */}
-        {/* -------------------------------------------------------------- */}
+        {/* ---------------------------------------------------------------- */}
+        {/*                           MENU ACTIONS                           */}
+        {/* ---------------------------------------------------------------- */}
 
         <div className={styles.taskMenuWrapper} ref={menuRef}>
           <button
@@ -159,6 +264,15 @@ export default function ProjectTaskCard({
 
               <button
                 type="button"
+                className={styles.taskMenuAction}
+                role="menuitem"
+                onClick={handleOpenCommentForm}
+              >
+                Ajouter un commentaire
+              </button>
+
+              <button
+                type="button"
                 className={`${styles.taskMenuAction} ${styles.taskDeleteAction}`}
                 role="menuitem"
                 onClick={handleDelete}
@@ -170,9 +284,9 @@ export default function ProjectTaskCard({
         </div>
       </div>
 
-      {/* -------------------------------------------------------------- */}
-      {/*                            DATE                                */}
-      {/* -------------------------------------------------------------- */}
+      {/* -------------------------------------------------------------------- */}
+      {/*                                DATE                                  */}
+      {/* -------------------------------------------------------------------- */}
 
       <div className={styles.taskDate}>
         <span>Échéance :</span>
@@ -182,9 +296,9 @@ export default function ProjectTaskCard({
         <strong>{date}</strong>
       </div>
 
-      {/* -------------------------------------------------------------- */}
-      {/*                         ASSIGNATIONS                           */}
-      {/* -------------------------------------------------------------- */}
+      {/* -------------------------------------------------------------------- */}
+      {/*                            ASSIGNATIONS                              */}
+      {/* -------------------------------------------------------------------- */}
 
       <div className={styles.assignees}>
         <span>Assigné à :</span>
@@ -202,9 +316,55 @@ export default function ProjectTaskCard({
         )}
       </div>
 
-      {/* -------------------------------------------------------------- */}
-      {/*                         COMMENTAIRES                           */}
-      {/* -------------------------------------------------------------- */}
+      {/* -------------------------------------------------------------------- */}
+      {/*                     FORMULAIRE COMMENTAIRE                           */}
+      {/* -------------------------------------------------------------------- */}
+
+      {isCommentFormOpen && (
+        <form className={styles.commentForm} onSubmit={handleAddComment}>
+          <label htmlFor={commentInputId}>Ajouter un commentaire</label>
+
+          <textarea
+            id={commentInputId}
+            value={commentContent}
+            onChange={(event) => setCommentContent(event.target.value)}
+            placeholder="Écrivez votre commentaire..."
+            rows={3}
+            maxLength={2000}
+            disabled={isCommentLoading}
+            required
+          />
+
+          {commentError && (
+            <p className={styles.commentError} role="alert">
+              {commentError}
+            </p>
+          )}
+
+          <div className={styles.commentFormActions}>
+            <button
+              type="button"
+              className={styles.cancelCommentButton}
+              disabled={isCommentLoading}
+              onClick={handleCloseCommentForm}
+            >
+              Annuler
+            </button>
+
+            <button
+              type="submit"
+              className={styles.addCommentButton}
+              disabled={isCommentLoading || !commentContent.trim()}
+            >
+              {isCommentLoading ? 'Ajout...' : 'Ajouter'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* -------------------------------------------------------------------- */}
+      {/*                            COMMENTAIRES                              */}
+      {/* -------------------------------------------------------------------- */}
 
       <details className={styles.comments}>
         <summary>

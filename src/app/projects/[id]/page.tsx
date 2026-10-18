@@ -21,6 +21,7 @@ import { useAuth } from '@/context/AuthContext';
 import {
   ApiProjectDetails,
   ApiProjectTask,
+  createTaskComment,
   deleteTask,
   getProject,
   getProjectTasks,
@@ -367,6 +368,18 @@ export default function SingleProjectPage() {
     }
   };
 
+  const handleAddTaskComment = async (taskId: string, content: string) => {
+    const token = getAuthToken();
+
+    if (!token) {
+      throw new Error('Session utilisateur introuvable.');
+    }
+
+    await createTaskComment(token, projectId, taskId, content);
+
+    setProjectRefreshKey((current) => current + 1);
+  };
+
   /* -------------------------------------------------------------------------- */
   /*                          PROJET SUPPRIMÉ                                   */
   /* -------------------------------------------------------------------------- */
@@ -582,6 +595,9 @@ export default function SingleProjectPage() {
                       {...task}
                       onEdit={() => handleEditTask(task.id)}
                       onDelete={() => handleDeleteTask(task.id, task.title)}
+                      onAddComment={(content) =>
+                        handleAddTaskComment(task.id, content)
+                      }
                     />
                   ))
                 )}
