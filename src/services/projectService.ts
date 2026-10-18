@@ -131,6 +131,55 @@ export async function createProject(
   return data as CreateProjectResponse;
 }
 
+export type CreateTaskPayload = {
+  title: string;
+  description?: string;
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  dueDate?: string;
+  assigneeIds?: string[];
+};
+
+type CreateTaskResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    task: ApiProjectTask;
+  };
+};
+
+export async function createTask(
+  token: string,
+  projectId: string,
+  payload: CreateTaskPayload
+): Promise<CreateTaskResponse> {
+  const response = await fetch(`${API_URL}/projects/${projectId}/tasks`, {
+    method: 'POST',
+
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+
+    body: JSON.stringify(payload),
+  });
+
+  const data: CreateTaskResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    const errorData = data as ApiErrorResponse;
+
+    const validationMessage = errorData.data?.errors?.[0]?.message;
+
+    throw new Error(
+      validationMessage ||
+        errorData.message ||
+        'Erreur lors de la création de la tâche'
+    );
+  }
+
+  return data as CreateTaskResponse;
+}
+
 export async function getProjects(token: string): Promise<ProjectsResponse> {
   const response = await fetch(`${API_URL}/projects`, {
     method: 'GET',

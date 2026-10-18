@@ -41,13 +41,6 @@ export default function ProjectModal({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    /*
-     * Pour l'instant, on connecte uniquement
-     * la création.
-     *
-     * Le mode édition sera branché ensuite
-     * sur PUT /projects/:id.
-     */
     if (isEdit) {
       return;
     }

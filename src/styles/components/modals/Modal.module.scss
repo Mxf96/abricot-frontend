@@ -401,6 +401,12 @@
   font-weight: 500;
 }
 
+.fieldHint {
+  color: #737d8d;
+
+  font-size: 12px;
+}
+
 .submitButton {
   align-self: flex-start;
 
@@ -429,10 +435,15 @@
   }
 }
 
-.fieldHint {
-  color: #737d8d;
+.multiSelect {
+  height: auto !important;
+  min-height: 90px;
 
-  font-size: 12px;
+  padding: 8px 16px !important;
+
+  option {
+    padding: 6px 0;
+  }
 }
 
 /* ======================================================

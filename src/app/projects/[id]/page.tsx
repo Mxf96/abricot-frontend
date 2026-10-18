@@ -139,6 +139,7 @@ function transformTask(task: ApiProjectTask): DisplayTask | null {
 
     commentItems: task.comments.map((comment) => ({
       id: comment.id,
+
       content: comment.content,
 
       author: getDisplayName(comment.author.name, comment.author.email),
@@ -164,6 +165,8 @@ export default function SingleProjectPage() {
   const [search, setSearch] = useState('');
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+
+  const [projectRefreshKey, setProjectRefreshKey] = useState(0);
 
   const [isEditProjectOpen, setIsEditProjectOpen] = useState(false);
 
@@ -251,7 +254,7 @@ export default function SingleProjectPage() {
     return () => {
       isCancelled = true;
     };
-  }, [projectId, isAuthLoading, user?.id]);
+  }, [projectId, isAuthLoading, user?.id, projectRefreshKey]);
 
   const filteredTasks = useMemo(() => {
     const value = search.trim().toLowerCase();
@@ -272,6 +275,22 @@ export default function SingleProjectPage() {
   const canEditProject = project?.userRole === 'ADMIN';
 
   const totalPeople = project ? project.members.length + 1 : 0;
+
+  const taskAssigneeOptions = project
+    ? [
+        {
+          id: project.owner.id,
+
+          name: getDisplayName(project.owner.name, project.owner.email),
+        },
+
+        ...project.members.map((member) => ({
+          id: member.user.id,
+
+          name: getDisplayName(member.user.name, member.user.email),
+        })),
+      ]
+    : [];
 
   return (
     <ProtectedRoute>
@@ -454,12 +473,17 @@ export default function SingleProjectPage() {
         isOpen={isCreateTaskOpen}
         onClose={() => setIsCreateTaskOpen(false)}
         mode="create"
+        projectId={projectId}
+        assignees={taskAssigneeOptions}
+        onSuccess={() => setProjectRefreshKey((current) => current + 1)}
       />
 
       <TaskModal
         isOpen={isEditTaskOpen}
         onClose={() => setIsEditTaskOpen(false)}
         mode="edit"
+        projectId={projectId}
+        assignees={taskAssigneeOptions}
       />
 
       <AITaskModal isOpen={isAiOpen} onClose={() => setIsAiOpen(false)} />
