@@ -74,7 +74,7 @@ export default function ProjectCard({
 
         <div className={styles.teamSection}>
           <div className={styles.teamTitle}>
-            <span className={styles.teamIcon} aria-hidden="true">♣</span>
+            <span className={styles.teamIcon} aria-hidden="true" />
 
             <span>Équipe ({members.length})</span>
           </div>
@@ -82,7 +82,10 @@ export default function ProjectCard({
           <div className={styles.members}>
             {owner && (
               <>
-                <span className={`${styles.avatar} ${styles.ownerAvatar}`} aria-hidden="true">
+                <span
+                  className={`${styles.avatar} ${styles.ownerAvatar}`}
+                  aria-hidden="true"
+                >
                   {owner.initials}
                 </span>
 
@@ -92,7 +95,11 @@ export default function ProjectCard({
 
             <div className={styles.contributors}>
               {contributors.map((member) => (
-                <span key={member.id} className={styles.avatar} aria-hidden="true">
+                <span
+                  key={member.id}
+                  className={styles.avatar}
+                  aria-hidden="true"
+                >
                   {member.initials}
                 </span>
               ))}

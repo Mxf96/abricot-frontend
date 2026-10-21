@@ -291,7 +291,7 @@ export default function ProjectTaskCard({
       <div className={styles.taskDate}>
         <span>Échéance :</span>
 
-        <span aria-hidden="true">▣</span>
+        <span className={styles.calendarIcon} aria-hidden="true" />
 
         <strong>{date}</strong>
       </div>
@@ -308,7 +308,9 @@ export default function ProjectTaskCard({
         ) : (
           assignees.map((assignee) => (
             <div key={assignee.id}>
-              <span className={styles.avatar} aria-hidden="true">{assignee.initials}</span>
+              <span className={styles.avatar} aria-hidden="true">
+                {assignee.initials}
+              </span>
 
               <span className={styles.memberBadge}>{assignee.name}</span>
             </div>
@@ -370,7 +372,9 @@ export default function ProjectTaskCard({
         <summary>
           <span>Commentaires ({comments})</span>
 
-          <span className={styles.commentArrow} aria-hidden="true">⌃</span>
+          <span className={styles.commentArrow} aria-hidden="true">
+            ⌃
+          </span>
         </summary>
 
         <div className={styles.commentsContent}>

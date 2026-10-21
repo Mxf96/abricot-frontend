@@ -261,6 +261,53 @@
   font-size: 12px;
 }
 
+.taskInformationItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* =========================================================
+   ICÔNES DES INFORMATIONS
+   ========================================================= */
+
+.folderIcon,
+.calendarIcon,
+.commentIcon {
+  display: inline-block;
+
+  width: 14px;
+  height: 14px;
+
+  flex: 0 0 14px;
+
+  background-color: #9ca3af;
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  -webkit-mask-position: center;
+  mask-position: center;
+
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+.folderIcon {
+  -webkit-mask-image: url('/assets/img/icons/folder_active.png');
+  mask-image: url('/assets/img/icons/folder_active.png');
+}
+
+.calendarIcon {
+  -webkit-mask-image: url('/assets/img/icons/Calendar.png');
+  mask-image: url('/assets/img/icons/Calendar.png');
+}
+
+.commentIcon {
+  -webkit-mask-image: url('/assets/img/icons/Bulle.png');
+  mask-image: url('/assets/img/icons/Bulle.png');
+}
+
 .separator {
   display: inline-block;
 

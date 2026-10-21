@@ -221,6 +221,29 @@
   color: #697484;
 }
 
+.teamIcon {
+  display: inline-block;
+
+  width: 14px;
+  height: 14px;
+
+  flex: 0 0 14px;
+
+  background-color: #9ca3af;
+
+  -webkit-mask-image: url('/assets/img/icons/Equipe.png');
+  mask-image: url('/assets/img/icons/Equipe.png');
+
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+
+  -webkit-mask-position: center;
+  mask-position: center;
+
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
 .members {
   display: flex;
   align-items: center;

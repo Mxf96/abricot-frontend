@@ -290,8 +290,11 @@ export default function SingleProjectPage() {
 
   const isProjectAdmin = project?.userRole === 'ADMIN';
 
-  const canCreateDeleteTasks = isProjectAdmin;
+  const isProjectMember =
+    project?.userRole === 'ADMIN' || project?.userRole === 'CONTRIBUTOR';
 
+  const canCreateTasks = isProjectMember;
+  const canDeleteTasks = isProjectMember;
   const canEditTasks = isProjectAdmin;
 
   /* -------------------------------------------------------------------------- */
@@ -442,7 +445,7 @@ export default function SingleProjectPage() {
                 </div>
               </div>
 
-              {canCreateDeleteTasks && (
+              {canCreateTasks && (
                 <div className={styles.projectActions}>
                   <button
                     type="button"
@@ -452,14 +455,14 @@ export default function SingleProjectPage() {
                     Créer une tâche
                   </button>
 
-                  <button
+                  {/* <button
                     type="button"
                     className={styles.aiButton}
                     onClick={() => setIsAiOpen(true)}
                   >
                     <span aria-hidden="true">✦</span>
                     IA
-                  </button>
+                  </button> */}
                 </div>
               )}
             </section>
@@ -535,7 +538,11 @@ export default function SingleProjectPage() {
                       aria-label="Vue calendrier non disponible"
                       disabled
                     >
-                      <span aria-hidden="true">▣</span>
+                      <span
+                        className={styles.calendarIcon}
+                        aria-hidden="true"
+                      />
+
                       <span>Calendrier</span>
                     </button>
                   </div>
@@ -595,7 +602,7 @@ export default function SingleProjectPage() {
                         canEditTasks ? () => handleEditTask(task.id) : undefined
                       }
                       onDelete={
-                        canCreateDeleteTasks
+                        canDeleteTasks
                           ? () => handleDeleteTask(task.id, task.title)
                           : undefined
                       }
@@ -630,7 +637,7 @@ export default function SingleProjectPage() {
       {/*                       CRÉATION TÂCHE                              */}
       {/* ---------------------------------------------------------------- */}
 
-      {canCreateDeleteTasks && (
+      {canCreateTasks && (
         <TaskModal
           isOpen={isCreateTaskOpen}
           onClose={() => setIsCreateTaskOpen(false)}
