@@ -8,21 +8,15 @@ import {
   useState,
 } from 'react';
 
-import { AuthUser, getProfile } from '@/services/authService';
-
-import {
-  clearAuthSession,
-  getAuthToken,
-  saveAuthSession,
-} from '@/utils/authStorage';
+import { AuthUser, getProfile, logoutSession } from '@/services/authService';
 
 type AuthContextType = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  saveSession: (token: string, user: AuthUser) => void;
+  saveSession: (user: AuthUser) => void;
   updateUser: (user: AuthUser) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,21 +31,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      const token = getAuthToken();
-
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
       try {
-        const response = await getProfile(token);
+        const response = await getProfile();
 
         setUser(response.data.user);
-
-        saveAuthSession(token, response.data.user);
       } catch {
-        clearAuthSession();
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -61,25 +45,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkAuthentication();
   }, []);
 
-  const saveSession = (token: string, authenticatedUser: AuthUser) => {
-    saveAuthSession(token, authenticatedUser);
-
+  const saveSession = (authenticatedUser: AuthUser) => {
+    /*
+     * Le JWT n'est jamais stocké ni lu côté navigateur.
+     * Le contexte conserve uniquement les informations
+     * non sensibles nécessaires à l'interface.
+     */
     setUser(authenticatedUser);
   };
 
   const updateUser = (updatedUser: AuthUser) => {
     setUser(updatedUser);
-
-    const token = getAuthToken();
-
-    if (token) {
-      saveAuthSession(token, updatedUser);
-    }
   };
 
-  const logout = () => {
-    clearAuthSession();
-    setUser(null);
+  const logout = async () => {
+    try {
+      await logoutSession();
+    } finally {
+      setUser(null);
+    }
   };
 
   return (

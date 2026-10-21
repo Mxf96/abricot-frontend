@@ -10,8 +10,6 @@ import {
   updateTask,
 } from '@/services/projectService';
 
-import { getAuthToken } from '@/utils/authStorage';
-
 import styles from '@/styles/components/modals/Modal.module.scss';
 
 export type TaskAssigneeOption = {
@@ -105,14 +103,6 @@ export default function TaskModal({
 
     setError('');
 
-    const token = getAuthToken();
-
-    if (!token) {
-      setError('Session utilisateur introuvable.');
-
-      return;
-    }
-
     if (!projectId) {
       setError('Projet introuvable.');
 
@@ -162,7 +152,7 @@ export default function TaskModal({
 
     try {
       if (isEdit && task) {
-        await updateTask(token, projectId, task.id, {
+        await updateTask(projectId, task.id, {
           title,
           description,
           priority,
@@ -171,7 +161,7 @@ export default function TaskModal({
           assigneeIds,
         });
       } else {
-        await createTask(token, projectId, {
+        await createTask(projectId, {
           title,
           description: description || undefined,
           priority,

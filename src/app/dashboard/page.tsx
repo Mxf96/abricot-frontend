@@ -18,8 +18,6 @@ import { AssignedTask, getAssignedTasks } from '@/services/dashboardService';
 
 import type { DashboardTask, DashboardTaskStatus } from '@/types/dashboard';
 
-import { getAuthToken } from '@/utils/authStorage';
-
 import styles from '../../styles/components/dashboard/Dashboard.module.scss';
 
 type DashboardView = 'list' | 'kanban';
@@ -176,18 +174,12 @@ export default function DashboardPage() {
     let isCancelled = false;
 
     const loadAssignedTasks = async () => {
-      const token = getAuthToken();
-
-      if (!token) {
-        return;
-      }
-
       setTasksError('');
 
       setIsTasksLoading(true);
 
       try {
-        const response = await getAssignedTasks(token);
+        const response = await getAssignedTasks();
 
         /*
          * Les tâches sont classées

@@ -16,8 +16,6 @@ import {
   getProjectTasks,
 } from '@/services/projectService';
 
-import { getAuthToken } from '@/utils/authStorage';
-
 import styles from '@/styles/components/projects/Projects.module.scss';
 
 type ProjectCardData = {
@@ -48,11 +46,8 @@ function getInitials(name: string | null, email: string) {
   return email.slice(0, 2).toUpperCase();
 }
 
-async function transformProject(
-  project: ApiProject,
-  token: string
-): Promise<ProjectCardData> {
-  const tasksResponse = await getProjectTasks(token, project.id);
+async function transformProject(project: ApiProject): Promise<ProjectCardData> {
+  const tasksResponse = await getProjectTasks(project.id);
 
   const tasks = tasksResponse.data.tasks;
 
@@ -109,22 +104,14 @@ export default function ProjectsPage() {
     let isCancelled = false;
 
     const loadProjects = async () => {
-      const token = getAuthToken();
-
-      if (!token) {
-        return;
-      }
-
       setProjectsError('');
       setIsProjectsLoading(true);
 
       try {
-        const response = await getProjects(token);
+        const response = await getProjects();
 
         const transformedProjects = await Promise.all(
-          response.data.projects.map((project) =>
-            transformProject(project, token)
-          )
+          response.data.projects.map((project) => transformProject(project))
         );
 
         if (!isCancelled) {

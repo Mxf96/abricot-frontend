@@ -14,8 +14,6 @@ import {
   removeContributor,
 } from '@/services/projectService';
 
-import { getAuthToken } from '@/utils/authStorage';
-
 import styles from '@/styles/components/modals/Modal.module.scss';
 
 type ProjectModalProps = {
@@ -88,19 +86,11 @@ export default function ProjectModal({
       return;
     }
 
-    const token = getAuthToken();
-
-    if (!token) {
-      setContributorError('Session utilisateur introuvable.');
-
-      return;
-    }
-
     setContributorError('');
     setIsContributorLoading(true);
 
     try {
-      await addContributor(token, project.id, {
+      await addContributor(project.id, {
         email,
         role: contributorRole,
       });
@@ -127,19 +117,11 @@ export default function ProjectModal({
       return;
     }
 
-    const token = getAuthToken();
-
-    if (!token) {
-      setContributorError('Session utilisateur introuvable.');
-
-      return;
-    }
-
     setContributorError('');
     setIsContributorLoading(true);
 
     try {
-      await removeContributor(token, project.id, userId);
+      await removeContributor(project.id, userId);
 
       onSuccess?.();
     } catch (error) {
@@ -160,19 +142,11 @@ export default function ProjectModal({
       return;
     }
 
-    const token = getAuthToken();
-
-    if (!token) {
-      setError('Session utilisateur introuvable.');
-
-      return;
-    }
-
     setError('');
     setIsDeleting(true);
 
     try {
-      await deleteProject(token, project.id);
+      await deleteProject(project.id);
 
       setIsDeleteConfirmationOpen(false);
 
@@ -194,14 +168,6 @@ export default function ProjectModal({
     event.preventDefault();
 
     setError('');
-
-    const token = getAuthToken();
-
-    if (!token) {
-      setError('Session utilisateur introuvable.');
-
-      return;
-    }
 
     if (isEdit && !project) {
       setError('Projet introuvable.');
@@ -236,12 +202,12 @@ export default function ProjectModal({
 
     try {
       if (isEdit && project) {
-        await updateProject(token, project.id, {
+        await updateProject(project.id, {
           name,
           description,
         });
       } else {
-        await createProject(token, {
+        await createProject({
           name,
 
           description: description || undefined,

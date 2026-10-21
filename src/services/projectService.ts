@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = '/api/backend';
 
 /* -------------------------------------------------------------------------- */
 /*                                   TYPES                                    */
@@ -218,7 +218,6 @@ type ApiErrorResponse = {
 /* -------------------------------------------------------------------------- */
 
 export async function createProject(
-  token: string,
   payload: CreateProjectPayload
 ): Promise<CreateProjectResponse> {
   const response = await fetch(`${API_URL}/projects`, {
@@ -226,8 +225,6 @@ export async function createProject(
 
     headers: {
       'Content-Type': 'application/json',
-
-      Authorization: `Bearer ${token}`,
     },
 
     body: JSON.stringify(payload),
@@ -255,7 +252,6 @@ export async function createProject(
 /* -------------------------------------------------------------------------- */
 
 export async function updateProject(
-  token: string,
   projectId: string,
   payload: UpdateProjectPayload
 ): Promise<UpdateProjectResponse> {
@@ -264,8 +260,6 @@ export async function updateProject(
 
     headers: {
       'Content-Type': 'application/json',
-
-      Authorization: `Bearer ${token}`,
     },
 
     body: JSON.stringify(payload),
@@ -298,15 +292,10 @@ type DeleteProjectResponse = {
 };
 
 export async function deleteProject(
-  token: string,
   projectId: string
 ): Promise<DeleteProjectResponse> {
   const response = await fetch(`${API_URL}/projects/${projectId}`, {
     method: 'DELETE',
-
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   });
 
   const data: DeleteProjectResponse | ApiErrorResponse = await response.json();
@@ -327,7 +316,6 @@ export async function deleteProject(
 /* -------------------------------------------------------------------------- */
 
 export async function addContributor(
-  token: string,
   projectId: string,
   payload: AddContributorPayload
 ): Promise<ContributorActionResponse> {
@@ -338,8 +326,6 @@ export async function addContributor(
 
       headers: {
         'Content-Type': 'application/json',
-
-        Authorization: `Bearer ${token}`,
       },
 
       body: JSON.stringify(payload),
@@ -365,7 +351,6 @@ export async function addContributor(
 }
 
 export async function removeContributor(
-  token: string,
   projectId: string,
   userId: string
 ): Promise<ContributorActionResponse> {
@@ -373,10 +358,6 @@ export async function removeContributor(
     `${API_URL}/projects/${projectId}/contributors/${userId}`,
     {
       method: 'DELETE',
-
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }
   );
 
@@ -403,7 +384,6 @@ export async function removeContributor(
 /* -------------------------------------------------------------------------- */
 
 export async function createTask(
-  token: string,
   projectId: string,
   payload: CreateTaskPayload
 ): Promise<CreateTaskResponse> {
@@ -412,8 +392,6 @@ export async function createTask(
 
     headers: {
       'Content-Type': 'application/json',
-
-      Authorization: `Bearer ${token}`,
     },
 
     body: JSON.stringify(payload),
@@ -441,7 +419,6 @@ export async function createTask(
 /* -------------------------------------------------------------------------- */
 
 export async function updateTask(
-  token: string,
   projectId: string,
   taskId: string,
   payload: UpdateTaskPayload
@@ -453,8 +430,6 @@ export async function updateTask(
 
       headers: {
         'Content-Type': 'application/json',
-
-        Authorization: `Bearer ${token}`,
       },
 
       body: JSON.stringify(payload),
@@ -488,7 +463,6 @@ type DeleteTaskResponse = {
 };
 
 export async function deleteTask(
-  token: string,
   projectId: string,
   taskId: string
 ): Promise<DeleteTaskResponse> {
@@ -496,10 +470,6 @@ export async function deleteTask(
     `${API_URL}/projects/${projectId}/tasks/${taskId}`,
     {
       method: 'DELETE',
-
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }
   );
 
@@ -530,7 +500,6 @@ type CreateCommentResponse = {
 };
 
 export async function createTaskComment(
-  token: string,
   projectId: string,
   taskId: string,
   content: string
@@ -542,7 +511,6 @@ export async function createTaskComment(
 
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
       },
 
       body: JSON.stringify({
@@ -572,13 +540,9 @@ export async function createTaskComment(
 /*                              PROJECTS GET                                  */
 /* -------------------------------------------------------------------------- */
 
-export async function getProjects(token: string): Promise<ProjectsResponse> {
+export async function getProjects(): Promise<ProjectsResponse> {
   const response = await fetch(`${API_URL}/projects`, {
     method: 'GET',
-
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
 
     cache: 'no-store',
   });
@@ -598,16 +562,9 @@ export async function getProjects(token: string): Promise<ProjectsResponse> {
 /*                               PROJECT GET                                  */
 /* -------------------------------------------------------------------------- */
 
-export async function getProject(
-  token: string,
-  projectId: string
-): Promise<ProjectResponse> {
+export async function getProject(projectId: string): Promise<ProjectResponse> {
   const response = await fetch(`${API_URL}/projects/${projectId}`, {
     method: 'GET',
-
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
 
     cache: 'no-store',
   });
@@ -626,15 +583,10 @@ export async function getProject(
 /* -------------------------------------------------------------------------- */
 
 export async function getProjectTasks(
-  token: string,
   projectId: string
 ): Promise<ProjectTasksResponse> {
   const response = await fetch(`${API_URL}/projects/${projectId}/tasks`, {
     method: 'GET',
-
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
 
     cache: 'no-store',
   });

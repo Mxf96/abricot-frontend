@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = '/api/backend';
 
 export type AuthUser = {
   id: string;
@@ -12,7 +12,6 @@ type AuthResponse = {
   message: string;
   data: {
     user: AuthUser;
-    token: string;
   };
 };
 
@@ -39,12 +38,22 @@ type ApiErrorResponse = {
   };
 };
 
+type UpdatePasswordResponse = {
+  success: boolean;
+  message: string;
+};
+
+type LogoutResponse = {
+  success: boolean;
+  message: string;
+};
+
 export async function register(
   name: string,
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  const response = await fetch(`${API_URL}/auth/register`, {
+  const response = await fetch('/api/auth/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -69,7 +78,7 @@ export async function login(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  const response = await fetch(`${API_URL}/auth/login`, {
+  const response = await fetch('/api/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -89,12 +98,24 @@ export async function login(
   return data as AuthResponse;
 }
 
-export async function getProfile(token: string): Promise<ProfileResponse> {
+export async function logoutSession(): Promise<LogoutResponse> {
+  const response = await fetch('/api/auth/logout', {
+    method: 'POST',
+  });
+
+  const data: LogoutResponse | ApiErrorResponse = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Erreur lors de la déconnexion');
+  }
+
+  return data as LogoutResponse;
+}
+
+export async function getProfile(): Promise<ProfileResponse> {
   const response = await fetch(`${API_URL}/auth/profile`, {
     method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    cache: 'no-store',
   });
 
   const data: ProfileResponse | ApiErrorResponse = await response.json();
@@ -107,7 +128,6 @@ export async function getProfile(token: string): Promise<ProfileResponse> {
 }
 
 export async function updateProfile(
-  token: string,
   name: string,
   email: string
 ): Promise<ProfileResponse> {
@@ -115,7 +135,6 @@ export async function updateProfile(
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       name,
@@ -132,13 +151,7 @@ export async function updateProfile(
   return data as ProfileResponse;
 }
 
-type UpdatePasswordResponse = {
-  success: boolean;
-  message: string;
-};
-
 export async function updatePassword(
-  token: string,
   currentPassword: string,
   newPassword: string
 ): Promise<UpdatePasswordResponse> {
@@ -147,7 +160,6 @@ export async function updatePassword(
 
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
     },
 
     body: JSON.stringify({

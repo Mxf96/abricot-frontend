@@ -62,7 +62,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
       if (isLogin) {
         const response = await login(email, password);
 
-        saveSession(response.data.token, response.data.user);
+        saveSession(response.data.user);
 
         router.push('/dashboard');
         return;

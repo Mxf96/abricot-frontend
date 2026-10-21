@@ -36,8 +36,8 @@ export default function Header() {
     return 'U';
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.replace('/login');
   };
 

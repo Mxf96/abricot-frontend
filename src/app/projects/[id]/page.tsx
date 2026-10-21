@@ -27,8 +27,6 @@ import {
   getProjectTasks,
 } from '@/services/projectService';
 
-import { getAuthToken } from '@/utils/authStorage';
-
 import styles from '@/styles/components/projects/SingleProject.module.scss';
 
 type TaskStatus = 'todo' | 'in-progress' | 'done';
@@ -196,20 +194,14 @@ export default function SingleProjectPage() {
     let isCancelled = false;
 
     const loadProject = async () => {
-      const token = getAuthToken();
-
-      if (!token) {
-        return;
-      }
-
       setProjectError('');
       setIsProjectLoading(true);
 
       try {
         const [projectResponse, tasksResponse] = await Promise.all([
-          getProject(token, projectId),
+          getProject(projectId),
 
-          getProjectTasks(token, projectId),
+          getProjectTasks(projectId),
         ]);
 
         const sortedTasks = [...tasksResponse.data.tasks].sort((a, b) => {
@@ -347,16 +339,8 @@ export default function SingleProjectPage() {
       return;
     }
 
-    const token = getAuthToken();
-
-    if (!token) {
-      setProjectError('Session utilisateur introuvable.');
-
-      return;
-    }
-
     try {
-      await deleteTask(token, projectId, taskId);
+      await deleteTask(projectId, taskId);
 
       setProjectRefreshKey((current) => current + 1);
     } catch (error) {
@@ -369,13 +353,7 @@ export default function SingleProjectPage() {
   };
 
   const handleAddTaskComment = async (taskId: string, content: string) => {
-    const token = getAuthToken();
-
-    if (!token) {
-      throw new Error('Session utilisateur introuvable.');
-    }
-
-    await createTaskComment(token, projectId, taskId, content);
+    await createTaskComment(projectId, taskId, content);
 
     setProjectRefreshKey((current) => current + 1);
   };

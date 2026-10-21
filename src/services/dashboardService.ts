@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = '/api/backend';
 
 export type ApiTaskStatus = 'TODO' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED';
 
@@ -39,14 +39,9 @@ type ApiErrorResponse = {
   error?: string;
 };
 
-export async function getAssignedTasks(
-  token: string
-): Promise<AssignedTasksResponse> {
+export async function getAssignedTasks(): Promise<AssignedTasksResponse> {
   const response = await fetch(`${API_URL}/dashboard/assigned-tasks`, {
     method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     cache: 'no-store',
   });
 

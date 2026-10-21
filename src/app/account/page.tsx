@@ -13,7 +13,6 @@ import {
   updateProfile,
 } from '@/services/authService';
 
-import { getAuthToken } from '@/utils/authStorage';
 
 import styles from '@/styles/components/account/Account.module.scss';
 
@@ -94,16 +93,6 @@ export default function AccountPage() {
 
     setSuccess('');
 
-    const token = getAuthToken();
-
-    if (!token) {
-      setError(
-        'Session utilisateur introuvable.'
-      );
-
-      return;
-    }
-
     const fullName =
       `${firstName.trim()} ${lastName.trim()}`.trim();
 
@@ -128,7 +117,6 @@ export default function AccountPage() {
     try {
       const response =
         await updateProfile(
-          token,
           fullName,
           email.trim()
         );
@@ -169,16 +157,6 @@ export default function AccountPage() {
     setPasswordError('');
 
     setPasswordSuccess('');
-
-    const token = getAuthToken();
-
-    if (!token) {
-      setPasswordError(
-        'Session utilisateur introuvable.'
-      );
-
-      return;
-    }
 
     if (!currentPassword) {
       setPasswordError(
@@ -238,7 +216,6 @@ export default function AccountPage() {
     try {
       const response =
         await updatePassword(
-          token,
           currentPassword,
           newPassword
         );
