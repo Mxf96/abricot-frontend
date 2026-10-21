@@ -289,8 +289,7 @@ export default function SingleProjectPage() {
 
   const isProjectAdmin = project?.userRole === 'ADMIN';
 
-  const canCreateDeleteTasks =
-    project?.userRole === 'ADMIN' || project?.userRole === 'CONTRIBUTOR';
+  const canCreateDeleteTasks = isProjectAdmin;
 
   const canEditTasks = isProjectAdmin;
 

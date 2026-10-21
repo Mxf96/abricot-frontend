@@ -6,7 +6,6 @@ import Modal from './Modal';
 
 import {
   ApiProjectDetails,
-  ContributorRole,
   addContributor,
   createProject,
   updateProject,
@@ -45,9 +44,6 @@ export default function ProjectModal({
 
   const [contributorEmail, setContributorEmail] = useState('');
 
-  const [contributorRole, setContributorRole] =
-    useState<ContributorRole>('CONTRIBUTOR');
-
   const [contributorError, setContributorError] = useState('');
 
   const [isContributorLoading, setIsContributorLoading] = useState(false);
@@ -65,7 +61,6 @@ export default function ProjectModal({
     setError('');
     setContributorError('');
     setContributorEmail('');
-    setContributorRole('CONTRIBUTOR');
     setIsDeleteConfirmationOpen(false);
 
     onClose();
@@ -92,12 +87,10 @@ export default function ProjectModal({
     try {
       await addContributor(project.id, {
         email,
-        role: contributorRole,
       });
 
       setContributorEmail('');
-      setContributorRole('CONTRIBUTOR');
-
+  
       onSuccess?.();
     } catch (error) {
       if (error instanceof Error) {
@@ -221,8 +214,7 @@ export default function ProjectModal({
       setError('');
       setContributorError('');
       setContributorEmail('');
-      setContributorRole('CONTRIBUTOR');
-
+  
       onClose();
 
       onSuccess?.();
@@ -369,21 +361,6 @@ export default function ProjectModal({
                       aria-label="Email du contributeur"
                       disabled={isContributorLoading}
                     />
-
-                    <select
-                      value={contributorRole}
-                      onChange={(event) =>
-                        setContributorRole(
-                          event.target.value as ContributorRole
-                        )
-                      }
-                      aria-label="Rôle du contributeur"
-                      disabled={isContributorLoading}
-                    >
-                      <option value="CONTRIBUTOR">Contributeur</option>
-
-                      <option value="ADMIN">Administrateur</option>
-                    </select>
 
                     <button
                       type="button"

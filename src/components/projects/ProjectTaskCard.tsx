@@ -273,14 +273,16 @@ export default function ProjectTaskCard({
                 Ajouter un commentaire
               </button>
 
-              <button
-                type="button"
-                className={`${styles.taskMenuAction} ${styles.taskDeleteAction}`}
-                role="menuitem"
-                onClick={handleDelete}
-              >
-                Supprimer
-              </button>
+              {onDelete && (
+                <button
+                  type="button"
+                  className={`${styles.taskMenuAction} ${styles.taskDeleteAction}`}
+                  role="menuitem"
+                  onClick={handleDelete}
+                >
+                  Supprimer
+                </button>
+              )}
             </div>
           )}
         </div>

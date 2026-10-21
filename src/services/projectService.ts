@@ -93,11 +93,8 @@ export type CreatedProject = Omit<ApiProject, 'userRole'>;
 /*                            CONTRIBUTOR PAYLOADS                            */
 /* -------------------------------------------------------------------------- */
 
-export type ContributorRole = 'ADMIN' | 'CONTRIBUTOR';
-
 export type AddContributorPayload = {
   email: string;
-  role?: ContributorRole;
 };
 
 /* -------------------------------------------------------------------------- */
