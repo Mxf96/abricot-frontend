@@ -88,7 +88,12 @@ export default function AuthPage({ mode }: AuthPageProps) {
     <main className={styles.authPage}>
       <section className={styles.authPanel}>
         <div className={styles.authContent}>
-          <Image src={logoImage} alt="Abricot" priority />
+          <Image
+            className={styles.logo}
+            src={logoImage}
+            alt="Abricot"
+            priority
+          />
 
           <div className={styles.formContainer}>
             <h1 className={isForgotPassword ? styles.forgotTitle : undefined}>
