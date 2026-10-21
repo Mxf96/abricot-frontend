@@ -3,10 +3,13 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+
 import KanbanColumn from '@/components/dashboard/KanbanColumn';
 import TaskCard from '@/components/dashboard/TaskCard';
+
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
+
 import ProjectModal from '@/components/modals/ProjectModal';
 
 import { useAuth } from '@/context/AuthContext';
@@ -28,6 +31,10 @@ const priorityOrder = {
   LOW: 3,
 };
 
+/* -------------------------------------------------------------------------- */
+/*                                STATUS                                      */
+/* -------------------------------------------------------------------------- */
+
 function mapStatus(status: AssignedTask['status']): DashboardTaskStatus | null {
   switch (status) {
     case 'TODO':
@@ -47,6 +54,10 @@ function mapStatus(status: AssignedTask['status']): DashboardTaskStatus | null {
   }
 }
 
+/* -------------------------------------------------------------------------- */
+/*                             FORMAT DATE                                    */
+/* -------------------------------------------------------------------------- */
+
 function formatDate(date: string | null) {
   if (!date) {
     return 'Sans échéance';
@@ -58,24 +69,85 @@ function formatDate(date: string | null) {
   }).format(new Date(date));
 }
 
+/* -------------------------------------------------------------------------- */
+/*                          TRANSFORMATION TÂCHE                              */
+/* -------------------------------------------------------------------------- */
+
 function transformTask(task: AssignedTask): DashboardTask | null {
   const status = mapStatus(task.status);
 
+  /*
+   * Les tâches CANCELLED
+   * ne sont pas affichées
+   * dans le Dashboard.
+   */
   if (!status) {
     return null;
   }
 
   return {
     id: task.id,
+
     title: task.title,
+
     description: task.description ?? 'Aucune description',
+
     project: task.project.name,
+
     projectId: task.project.id,
+
+    /*
+     * Date destinée à l'affichage.
+     */
     date: formatDate(task.dueDate),
+
+    /*
+     * Date brute conservée pour
+     * le filtre du Kanban mensuel.
+     */
+    dueDate: task.dueDate,
+
     comments: task.comments.length,
+
     status,
   };
 }
+
+/* -------------------------------------------------------------------------- */
+/*                       TÂCHE DU MOIS COURANT                                */
+/* -------------------------------------------------------------------------- */
+
+function isTaskInCurrentMonth(task: DashboardTask) {
+  /*
+   * Une tâche sans échéance
+   * ne peut pas appartenir
+   * au Kanban du mois.
+   */
+  if (!task.dueDate) {
+    return false;
+  }
+
+  const dueDate = new Date(task.dueDate);
+
+  /*
+   * Protection contre une
+   * éventuelle date invalide.
+   */
+  if (Number.isNaN(dueDate.getTime())) {
+    return false;
+  }
+
+  const currentDate = new Date();
+
+  return (
+    dueDate.getFullYear() === currentDate.getFullYear() &&
+    dueDate.getMonth() === currentDate.getMonth()
+  );
+}
+
+/* ========================================================================== */
+/*                                DASHBOARD                                   */
+/* ========================================================================== */
 
 export default function DashboardPage() {
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -92,6 +164,10 @@ export default function DashboardPage() {
 
   const [tasksError, setTasksError] = useState('');
 
+  /* ------------------------------------------------------------------------ */
+  /*                      CHARGEMENT DES TÂCHES                               */
+  /* ------------------------------------------------------------------------ */
+
   useEffect(() => {
     if (isAuthLoading || !user) {
       return;
@@ -107,11 +183,23 @@ export default function DashboardPage() {
       }
 
       setTasksError('');
+
       setIsTasksLoading(true);
 
       try {
         const response = await getAssignedTasks(token);
 
+        /*
+         * Les tâches sont classées
+         * en premier par priorité :
+         *
+         * URGENT
+         * HIGH
+         * MEDIUM
+         * LOW
+         *
+         * puis par date d'échéance.
+         */
         const sortedTasks = [...response.data.tasks].sort((a, b) => {
           const priorityDifference =
             priorityOrder[a.priority] - priorityOrder[b.priority];
@@ -166,6 +254,10 @@ export default function DashboardPage() {
     };
   }, [isAuthLoading, user?.id]);
 
+  /* ------------------------------------------------------------------------ */
+  /*                      RECHERCHE - VUE LISTE                               */
+  /* ------------------------------------------------------------------------ */
+
   const filteredTasks = useMemo(() => {
     const value = search.trim().toLowerCase();
 
@@ -182,19 +274,40 @@ export default function DashboardPage() {
     });
   }, [tasks, search]);
 
-  const todoTasks = filteredTasks.filter((task) => task.status === 'todo');
+  /* ------------------------------------------------------------------------ */
+  /*                     TÂCHES DU MOIS - KANBAN                              */
+  /* ------------------------------------------------------------------------ */
 
-  const inProgressTasks = filteredTasks.filter(
+  const monthlyTasks = useMemo(() => {
+    return tasks.filter(isTaskInCurrentMonth);
+  }, [tasks]);
+
+  /*
+   * Le Kanban utilise uniquement
+   * les tâches du mois courant.
+   *
+   * Il n'utilise volontairement PAS
+   * filteredTasks afin que la recherche
+   * de la vue Liste n'affecte pas
+   * le Kanban.
+   */
+  const todoTasks = monthlyTasks.filter((task) => task.status === 'todo');
+
+  const inProgressTasks = monthlyTasks.filter(
     (task) => task.status === 'in-progress'
   );
 
-  const doneTasks = filteredTasks.filter((task) => task.status === 'done');
+  const doneTasks = monthlyTasks.filter((task) => task.status === 'done');
 
   return (
     <ProtectedRoute>
       <Header />
 
       <main className={styles.dashboard}>
+        {/* -------------------------------------------------------------- */}
+        {/*                         HEADER                                 */}
+        {/* -------------------------------------------------------------- */}
+
         <section className={styles.dashboardHeader}>
           <div>
             <h1>Tableau de bord</h1>
@@ -213,6 +326,10 @@ export default function DashboardPage() {
             + Créer un projet
           </button>
         </section>
+
+        {/* -------------------------------------------------------------- */}
+        {/*                    SÉLECTEUR DE VUE                            */}
+        {/* -------------------------------------------------------------- */}
 
         <div className={styles.viewSelector}>
           <button
@@ -239,6 +356,10 @@ export default function DashboardPage() {
             <span>Kanban</span>
           </button>
         </div>
+
+        {/* -------------------------------------------------------------- */}
+        {/*                          VUE LISTE                              */}
+        {/* -------------------------------------------------------------- */}
 
         {view === 'list' && (
           <section className={styles.tasksSection}>
@@ -282,6 +403,10 @@ export default function DashboardPage() {
           </section>
         )}
 
+        {/* -------------------------------------------------------------- */}
+        {/*                          VUE KANBAN                             */}
+        {/* -------------------------------------------------------------- */}
+
         {view === 'kanban' && (
           <section className={styles.kanban}>
             {isTasksLoading ? (
@@ -300,6 +425,10 @@ export default function DashboardPage() {
           </section>
         )}
       </main>
+
+      {/* -------------------------------------------------------------- */}
+      {/*                    CRÉATION DE PROJET                          */}
+      {/* -------------------------------------------------------------- */}
 
       <ProjectModal
         isOpen={isCreateProjectOpen}
