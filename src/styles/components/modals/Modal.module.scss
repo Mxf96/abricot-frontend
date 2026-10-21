@@ -49,7 +49,7 @@
 
   border: 0;
 
-  color: #737d8d;
+  color: #5f6875;
   background: transparent;
 
   font-size: 30px;
@@ -101,7 +101,7 @@
     border: 1px solid #d9dee5;
     border-radius: 4px;
 
-    color: #737d8d;
+    color: #5f6875;
     background: #ffffff;
 
     font: inherit;
@@ -119,7 +119,7 @@
 }
 
 .fieldHint {
-  color: #737d8d;
+  color: #5f6875;
 
   font-size: 12px;
 }
@@ -166,7 +166,7 @@
   border: 1px solid #d9dee5;
   border-radius: 6px;
 
-  color: #737d8d;
+  color: #5f6875;
   background: #ffffff;
 
   cursor: pointer;
@@ -231,7 +231,7 @@
 .noAssignees {
   margin: 0;
 
-  color: #737d8d;
+  color: #5f6875;
 
   font-size: 13px;
 }
@@ -358,17 +358,17 @@
 }
 
 .todo {
-  color: #ff5c5c;
+  color: #b42318;
   background: #ffdddd;
 }
 
 .inProgress {
-  color: #e69700;
+  color: #8a5a00;
   background: #fff0d0;
 }
 
 .done {
-  color: #1aa965;
+  color: #0b6b3a;
   background: #e5faef;
 }
 
@@ -381,7 +381,8 @@
   flex-direction: column;
   gap: 7px;
 
-  > label {
+  .contributorsLabel {
+    color: #202020;
     font-size: 14px;
   }
 }
@@ -410,7 +411,7 @@
 
     padding: 0 48px 0 16px;
 
-    color: #737d8d;
+    color: #5f6875;
 
     cursor: pointer;
 
@@ -489,7 +490,7 @@
 
   span,
   small {
-    color: #737d8d;
+    color: #5f6875;
 
     font-size: 12px;
   }
@@ -498,7 +499,7 @@
 .noContributors {
   margin: 0;
 
-  color: #737d8d;
+  color: #5f6875;
 
   font-size: 13px;
 }
@@ -696,7 +697,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #737d8d;
+    outline: 2px solid #5f6875;
     outline-offset: 2px;
   }
 }
@@ -846,7 +847,7 @@
   p {
     margin: 0;
 
-    color: #737d8d;
+    color: #5f6875;
 
     font-size: 14px;
   }
@@ -864,7 +865,7 @@
 
     border: 0;
 
-    color: #737d8d;
+    color: #5f6875;
     background: transparent;
 
     font-size: 12px;

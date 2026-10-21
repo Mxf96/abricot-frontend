@@ -2,15 +2,12 @@ import Image from 'next/image';
 
 import styles from '../../styles/components/layout/Footer.module.scss';
 
+import footerLogoImage from '../../../public/assets/img/logo/Logo_footer.jpg';
+
 export default function Footer() {
   return (
     <footer className={styles.footer}>
-      <Image
-        src="/assets/img/logo/Logo_footer.jpg"
-        alt="Abricot 2026"
-        width={101}
-        height={12.86}
-      />
+      <Image className={styles.logo} src={footerLogoImage} alt="" />
 
       <span>Abricot 2026</span>
     </footer>

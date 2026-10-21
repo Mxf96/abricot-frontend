@@ -375,7 +375,7 @@ export default function SingleProjectPage() {
     <ProtectedRoute>
       <Header />
 
-      <main className={styles.projectPage}>
+      <main id="main-content" className={styles.projectPage}>
         {/* -------------------------------------------------------------- */}
         {/*                         CHARGEMENT                             */}
         {/* -------------------------------------------------------------- */}
@@ -456,7 +456,7 @@ export default function SingleProjectPage() {
                     className={styles.aiButton}
                     onClick={() => setIsAiOpen(true)}
                   >
-                    <span>✦</span>
+                    <span aria-hidden="true">✦</span>
                     IA
                   </button>
                 </div>
@@ -477,7 +477,7 @@ export default function SingleProjectPage() {
               </div>
 
               <div className={styles.contributors}>
-                <span className={`${styles.avatar} ${styles.ownerAvatar}`}>
+                <span className={`${styles.avatar} ${styles.ownerAvatar}`} aria-hidden="true">
                   {getInitials(project.owner.name, project.owner.email)}
                 </span>
 
@@ -485,7 +485,7 @@ export default function SingleProjectPage() {
 
                 {project.members.map((member) => (
                   <div key={member.id}>
-                    <span className={styles.avatar}>
+                    <span className={styles.avatar} aria-hidden="true">
                       {getInitials(member.user.name, member.user.email)}
                     </span>
 
@@ -518,12 +518,21 @@ export default function SingleProjectPage() {
                     <button
                       type="button"
                       className={`${styles.viewButton} ${styles.activeView}`}
+                      aria-pressed="true"
                     >
-                      ✓<span>Liste</span>
+                      <span aria-hidden="true">✓</span>
+                      <span>Liste</span>
                     </button>
 
-                    <button type="button" className={styles.viewButton}>
-                      ▣<span>Calendrier</span>
+                    <button
+                      type="button"
+                      className={styles.viewButton}
+                      aria-pressed="false"
+                      aria-label="Vue calendrier non disponible"
+                      disabled
+                    >
+                      <span aria-hidden="true">▣</span>
+                      <span>Calendrier</span>
                     </button>
                   </div>
 
@@ -561,7 +570,7 @@ export default function SingleProjectPage() {
                       onChange={(event) => setSearch(event.target.value)}
                     />
 
-                    <span>⌕</span>
+                    <span aria-hidden="true">⌕</span>
                   </div>
                 </div>
               </div>

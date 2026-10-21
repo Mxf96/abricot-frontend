@@ -87,7 +87,7 @@
 .projectInformations p {
   margin: 12px 0 0;
 
-  color: #70798a;
+  color: #5f6875;
 
   font-size: 16px;
 }
@@ -155,7 +155,7 @@
 }
 
 .contributorsCount {
-  color: #7d8694;
+  color: #5f6875;
 }
 
 .contributors {
@@ -210,7 +210,7 @@
 }
 
 .memberBadge {
-  color: #737c89;
+  color: #4f5967;
   background: #e1e4e9;
 }
 
@@ -244,7 +244,7 @@
   p {
     margin: 0;
 
-    color: #788291;
+    color: #5f6875;
 
     font-size: 14px;
   }
@@ -284,6 +284,12 @@
   cursor: pointer;
 }
 
+.viewButton:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
 .activeView {
   background: #fde4d4;
 }
@@ -301,7 +307,7 @@
   border: 1px solid #dfe3e8;
   border-radius: 8px;
 
-  color: #7f8794;
+  color: #5f6875;
   background: #ffffff;
 
   outline: none;
@@ -328,7 +334,7 @@
     outline: none;
 
     &::placeholder {
-      color: #8a929f;
+      color: #66707d;
     }
 
     &:focus {
@@ -341,7 +347,7 @@
     top: 50%;
     right: 22px;
 
-    color: #707989;
+    color: #5f6875;
 
     transform: translateY(-50%);
   }
@@ -384,7 +390,7 @@
   > p {
     margin: 7px 0 0;
 
-    color: #7d8694;
+    color: #5f6875;
 
     font-size: 13px;
   }
@@ -422,17 +428,17 @@
 }
 
 .todo {
-  color: #ff5a5a;
+  color: #b42318;
   background: #ffe0e0;
 }
 
 .inProgress {
-  color: #e29a00;
+  color: #8a5a00;
   background: #fff0cf;
 }
 
 .done {
-  color: #1fa766;
+  color: #0b6b3a;
   background: #e3f8ed;
 }
 
@@ -547,7 +553,7 @@
 
   margin-top: 29px;
 
-  color: #7f8794;
+  color: #5f6875;
 
   font-size: 11px;
 
@@ -564,7 +570,7 @@
 
   margin-top: 21px;
 
-  color: #818a97;
+  color: #5f6875;
 
   font-size: 11px;
 }
@@ -618,7 +624,7 @@
       box-shadow 0.2s ease;
 
     &::placeholder {
-      color: #9aa2ad;
+      color: #66707d;
     }
 
     &:focus {
@@ -689,7 +695,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #737d8d;
+    outline: 2px solid #5f6875;
     outline-offset: 2px;
   }
 }
@@ -726,7 +732,7 @@
 
     padding: 16px 0;
 
-    color: #737d8d;
+    color: #5f6875;
 
     font-size: 14px;
 
@@ -847,7 +853,7 @@
 
   padding: 0 0 20px;
 
-  color: #7b8492;
+  color: #5f6875;
 
   font-size: 12px;
 

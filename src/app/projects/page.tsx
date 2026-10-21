@@ -143,7 +143,7 @@ export default function ProjectsPage() {
     <ProtectedRoute>
       <Header />
 
-      <main className={styles.projectsPage}>
+      <main id="main-content" className={styles.projectsPage}>
         <section className={styles.projectsHeader}>
           <div>
             <h1>Mes projets</h1>

@@ -10,6 +10,8 @@ import { useAuth } from '@/context/AuthContext';
 
 import styles from '../../styles/components/auth/AuthPage.module.scss';
 
+import logoImage from '../../../public/assets/img/logo/Logo.jpg';
+
 type AuthPageProps = {
   mode: 'login' | 'register' | 'forgot-password';
 };
@@ -86,14 +88,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
     <main className={styles.authPage}>
       <section className={styles.authPanel}>
         <div className={styles.authContent}>
-          <Image
-            className={styles.logo}
-            src="/assets/img/logo/Logo.jpg"
-            alt="Abricot"
-            width={254}
-            height={50}
-            priority
-          />
+          <Image src={logoImage} alt="Abricot" priority />
 
           <div className={styles.formContainer}>
             <h1 className={isForgotPassword ? styles.forgotTitle : undefined}>

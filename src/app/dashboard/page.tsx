@@ -295,7 +295,7 @@ export default function DashboardPage() {
     <ProtectedRoute>
       <Header />
 
-      <main className={styles.dashboard}>
+      <main id="main-content" className={styles.dashboard}>
         {/* -------------------------------------------------------------- */}
         {/*                         HEADER                                 */}
         {/* -------------------------------------------------------------- */}
@@ -330,8 +330,9 @@ export default function DashboardPage() {
               view === 'list' ? styles.selectedView : ''
             }`}
             onClick={() => setView('list')}
+            aria-pressed={view === 'list'}
           >
-            <span className={styles.viewIcon}>✓</span>
+            <span className={styles.viewIcon} aria-hidden="true">✓</span>
 
             <span>Liste</span>
           </button>
@@ -342,8 +343,9 @@ export default function DashboardPage() {
               view === 'kanban' ? styles.selectedView : ''
             }`}
             onClick={() => setView('kanban')}
+            aria-pressed={view === 'kanban'}
           >
-            <span className={styles.viewIcon}>▣</span>
+            <span className={styles.viewIcon} aria-hidden="true">▣</span>
 
             <span>Kanban</span>
           </button>
@@ -371,12 +373,12 @@ export default function DashboardPage() {
                   onChange={(event) => setSearch(event.target.value)}
                 />
 
-                <span>⌕</span>
+                <span aria-hidden="true">⌕</span>
               </div>
             </div>
 
             <div className={styles.tasksList}>
-              {isTasksLoading && <p>Chargement des tâches...</p>}
+              {isTasksLoading && <p role="status">Chargement des tâches...</p>}
 
               {!isTasksLoading && tasksError && (
                 <p role="alert">{tasksError}</p>
@@ -402,7 +404,7 @@ export default function DashboardPage() {
         {view === 'kanban' && (
           <section className={styles.kanban}>
             {isTasksLoading ? (
-              <p>Chargement des tâches...</p>
+              <p role="status">Chargement des tâches...</p>
             ) : tasksError ? (
               <p role="alert">{tasksError}</p>
             ) : (

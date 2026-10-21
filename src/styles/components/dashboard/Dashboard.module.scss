@@ -147,7 +147,7 @@
   p {
     margin: 0;
 
-    color: #7b8494;
+    color: #5f6875;
 
     font-size: 14px;
   }
@@ -176,7 +176,7 @@
     outline: none;
 
     &::placeholder {
-      color: #8b93a1;
+      color: #66707d;
     }
 
     &:focus {
@@ -189,7 +189,7 @@
     top: 50%;
     right: 25px;
 
-    color: #788396;
+    color: #5f6875;
 
     transform: translateY(-50%);
   }
@@ -235,7 +235,7 @@
   > p {
     margin: 8px 0 0;
 
-    color: #7d8796;
+    color: #5f6875;
 
     font-size: 14px;
   }
@@ -256,7 +256,7 @@
 
   margin-top: 31px;
 
-  color: #7d8796;
+  color: #5f6875;
 
   font-size: 12px;
 }
@@ -301,17 +301,17 @@
 }
 
 .todo {
-  color: #ff5a5a;
+  color: #b42318;
   background: #ffe0e0;
 }
 
 .inProgress {
-  color: #e69b00;
+  color: #8a5a00;
   background: #fff0ce;
 }
 
 .done {
-  color: #19a963;
+  color: #0b6b3a;
   background: #e4f8ed;
 }
 
@@ -396,7 +396,7 @@
 
   border-radius: 20px;
 
-  color: #6f7682;
+  color: #4f5967;
   background: #e8eaed;
 
   font-size: 12px;

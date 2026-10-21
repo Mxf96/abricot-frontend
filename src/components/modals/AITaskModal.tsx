@@ -14,10 +14,14 @@ export default function AITaskModal({
   onClose,
 }: AITaskModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      ariaLabel="Créer une tâche avec l'intelligence artificielle"
+    >
       <div className={styles.aiModal}>
         <h2>
-          <span className={styles.aiStar}>✦</span>
+          <span className={styles.aiStar} aria-hidden="true">✦</span>
           Créer une tâche
         </h2>
 
@@ -29,7 +33,7 @@ export default function AITaskModal({
           />
 
           <button type="button" aria-label="Envoyer">
-            ✦
+            <span aria-hidden="true">✦</span>
           </button>
         </div>
       </div>

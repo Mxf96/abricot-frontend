@@ -51,7 +51,14 @@ export default function ProjectCard({
             <strong>{progress}%</strong>
           </div>
 
-          <div className={styles.progressBar}>
+          <div
+            className={styles.progressBar}
+            role="progressbar"
+            aria-label={`Progression du projet ${name}`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progress}
+          >
             <div
               className={styles.progressValue}
               style={{
@@ -67,7 +74,7 @@ export default function ProjectCard({
 
         <div className={styles.teamSection}>
           <div className={styles.teamTitle}>
-            <span className={styles.teamIcon}>♣</span>
+            <span className={styles.teamIcon} aria-hidden="true">♣</span>
 
             <span>Équipe ({members.length})</span>
           </div>
@@ -75,7 +82,7 @@ export default function ProjectCard({
           <div className={styles.members}>
             {owner && (
               <>
-                <span className={`${styles.avatar} ${styles.ownerAvatar}`}>
+                <span className={`${styles.avatar} ${styles.ownerAvatar}`} aria-hidden="true">
                   {owner.initials}
                 </span>
 
@@ -85,7 +92,7 @@ export default function ProjectCard({
 
             <div className={styles.contributors}>
               {contributors.map((member) => (
-                <span key={member.id} className={styles.avatar}>
+                <span key={member.id} className={styles.avatar} aria-hidden="true">
                   {member.initials}
                 </span>
               ))}

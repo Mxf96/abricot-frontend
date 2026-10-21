@@ -67,15 +67,15 @@ export default function TaskCard({
         <p>{description}</p>
 
         <div className={styles.taskInformations}>
-          <span>📁 {project}</span>
+          <span><span aria-hidden="true">📁 </span>{project}</span>
 
-          <span className={styles.separator} />
+          <span className={styles.separator} aria-hidden="true" />
 
-          <span>▣ {date}</span>
+          <span><span aria-hidden="true">▣ </span>{date}</span>
 
-          <span className={styles.separator} />
+          <span className={styles.separator} aria-hidden="true" />
 
-          <span>▤ {comments}</span>
+          <span><span aria-hidden="true">▤ </span>{comments} commentaire{comments > 1 ? 's' : ''}</span>
         </div>
 
         {variant === 'kanban' && (

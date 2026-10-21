@@ -191,7 +191,11 @@ export default function TaskModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      ariaLabel={isEdit ? 'Modifier la tâche' : 'Créer une tâche'}
+    >
       <div className={styles.formModal}>
         <h2>{isEdit ? 'Modifier la tâche' : 'Créer une tâche'}</h2>
 

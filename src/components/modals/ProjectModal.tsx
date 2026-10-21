@@ -230,7 +230,11 @@ export default function ProjectModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose}>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      ariaLabel={isEdit ? 'Modifier un projet' : 'Créer un projet'}
+    >
       <div className={styles.formModal}>
         <h2>{isEdit ? 'Modifier un projet' : 'Créer un projet'}</h2>
 
@@ -289,7 +293,7 @@ export default function ProjectModal({
 
           {isEdit && project && (
             <div className={styles.contributorsField}>
-              <label>Contributeurs</label>
+              <span className={styles.contributorsLabel}>Contributeurs</span>
 
               <details className={styles.contributorsDetails}>
                 <summary>

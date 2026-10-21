@@ -238,7 +238,6 @@ export default function ProjectTaskCard({
             type="button"
             className={styles.taskMenuButton}
             aria-label={`Actions pour ${title}`}
-            aria-haspopup="menu"
             aria-expanded={isMenuOpen}
             aria-controls={menuId}
             onClick={() => setIsMenuOpen((current) => !current)}
@@ -250,14 +249,12 @@ export default function ProjectTaskCard({
             <div
               id={menuId}
               className={styles.taskMenu}
-              role="menu"
               aria-label={`Actions pour ${title}`}
             >
               {onEdit && (
                 <button
                   type="button"
                   className={styles.taskMenuAction}
-                  role="menuitem"
                   onClick={handleEdit}
                 >
                   Modifier
@@ -277,7 +274,6 @@ export default function ProjectTaskCard({
                 <button
                   type="button"
                   className={`${styles.taskMenuAction} ${styles.taskDeleteAction}`}
-                  role="menuitem"
                   onClick={handleDelete}
                 >
                   Supprimer
@@ -295,7 +291,7 @@ export default function ProjectTaskCard({
       <div className={styles.taskDate}>
         <span>Échéance :</span>
 
-        <span>▣</span>
+        <span aria-hidden="true">▣</span>
 
         <strong>{date}</strong>
       </div>
@@ -312,7 +308,7 @@ export default function ProjectTaskCard({
         ) : (
           assignees.map((assignee) => (
             <div key={assignee.id}>
-              <span className={styles.avatar}>{assignee.initials}</span>
+              <span className={styles.avatar} aria-hidden="true">{assignee.initials}</span>
 
               <span className={styles.memberBadge}>{assignee.name}</span>
             </div>
@@ -374,7 +370,7 @@ export default function ProjectTaskCard({
         <summary>
           <span>Commentaires ({comments})</span>
 
-          <span className={styles.commentArrow}>⌃</span>
+          <span className={styles.commentArrow} aria-hidden="true">⌃</span>
         </summary>
 
         <div className={styles.commentsContent}>

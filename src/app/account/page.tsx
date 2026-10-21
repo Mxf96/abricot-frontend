@@ -254,6 +254,7 @@ export default function AccountPage() {
       <Header />
 
       <main
+        id="main-content"
         className={
           styles.accountPage
         }
@@ -522,6 +523,7 @@ export default function AccountPage() {
                     )
                   }
                   autoComplete="new-password"
+                  aria-describedby="newPasswordHint"
                   disabled={
                     isPasswordLoading
                   }
@@ -529,6 +531,7 @@ export default function AccountPage() {
                 />
 
                 <span
+                  id="newPasswordHint"
                   className={
                     styles.fieldHint
                   }

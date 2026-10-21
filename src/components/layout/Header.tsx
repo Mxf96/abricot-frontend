@@ -8,6 +8,8 @@ import { useAuth } from '@/context/AuthContext';
 
 import styles from '@/styles/components/layout/Header.module.scss';
 
+import logoImage from '../../../public/assets/img/logo/Logo.jpg';
+
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
@@ -42,16 +44,15 @@ export default function Header() {
   };
 
   return (
-    <header className={styles.header}>
+    <>
+      <a href="#main-content" className={styles.skipLink}>
+        Aller au contenu principal
+      </a>
+
+      <header className={styles.header}>
       <div className={styles.headerContent}>
         <Link href="/dashboard" className={styles.logo}>
-          <Image
-            src="/assets/img/logo/Logo.jpg"
-            alt="Abricot"
-            width={147}
-            height={19}
-            priority
-          />
+          <Image src={logoImage} alt="Abricot" priority />
         </Link>
 
         <nav className={styles.navigation} aria-label="Navigation principale">
@@ -120,6 +121,7 @@ export default function Header() {
           </button>
         </div>
       </div>
-    </header>
+      </header>
+    </>
   );
 }
