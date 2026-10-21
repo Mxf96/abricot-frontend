@@ -27,7 +27,6 @@ import {
   getProjectTasks,
 } from '@/services/projectService';
 
-
 import styles from '@/styles/components/projects/SingleProject.module.scss';
 
 type TaskStatus = 'todo' | 'in-progress' | 'done';
@@ -157,6 +156,8 @@ export default function SingleProjectPage() {
 
   const { user, isLoading: isAuthLoading } = useAuth();
 
+  const userId = user?.id;
+
   const [project, setProject] = useState<ApiProjectDetails | null>(null);
 
   const [tasks, setTasks] = useState<DisplayTask[]>([]);
@@ -188,7 +189,7 @@ export default function SingleProjectPage() {
   /* -------------------------------------------------------------------------- */
 
   useEffect(() => {
-    if (isAuthLoading || !user || !projectId) {
+    if (isAuthLoading || !userId || !projectId) {
       return;
     }
 
@@ -261,7 +262,7 @@ export default function SingleProjectPage() {
     return () => {
       isCancelled = true;
     };
-  }, [projectId, isAuthLoading, user?.id, projectRefreshKey]);
+  }, [projectId, isAuthLoading, userId, projectRefreshKey]);
 
   /* -------------------------------------------------------------------------- */
   /*                              FILTRE TÂCHES                                 */
@@ -477,7 +478,10 @@ export default function SingleProjectPage() {
               </div>
 
               <div className={styles.contributors}>
-                <span className={`${styles.avatar} ${styles.ownerAvatar}`} aria-hidden="true">
+                <span
+                  className={`${styles.avatar} ${styles.ownerAvatar}`}
+                  aria-hidden="true"
+                >
                   {getInitials(project.owner.name, project.owner.email)}
                 </span>
 
@@ -588,9 +592,7 @@ export default function SingleProjectPage() {
                       key={task.id}
                       {...task}
                       onEdit={
-                        canEditTasks
-                          ? () => handleEditTask(task.id)
-                          : undefined
+                        canEditTasks ? () => handleEditTask(task.id) : undefined
                       }
                       onDelete={
                         canCreateDeleteTasks

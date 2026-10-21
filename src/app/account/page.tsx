@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import Footer from '@/components/layout/Footer';
@@ -22,12 +22,6 @@ export default function AccountPage() {
   /* -------------------------------------------------------------------------- */
   /*                              PROFIL UTILISATEUR                             */
   /* -------------------------------------------------------------------------- */
-
-  const [firstName, setFirstName] = useState('');
-
-  const [lastName, setLastName] = useState('');
-
-  const [email, setEmail] = useState('');
 
   const [error, setError] = useState('');
 
@@ -53,34 +47,6 @@ export default function AccountPage() {
     useState(false);
 
   /* -------------------------------------------------------------------------- */
-  /*                      CHARGEMENT DES INFORMATIONS                           */
-  /* -------------------------------------------------------------------------- */
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    const fullName = user.name?.trim() ?? '';
-
-    const nameParts = fullName
-      .split(/\s+/)
-      .filter(Boolean);
-
-    const firstNameValue =
-      nameParts.shift() ?? '';
-
-    const lastNameValue =
-      nameParts.join(' ');
-
-    setFirstName(firstNameValue);
-
-    setLastName(lastNameValue);
-
-    setEmail(user.email);
-  }, [user]);
-
-  /* -------------------------------------------------------------------------- */
   /*                         MODIFICATION DU PROFIL                             */
   /* -------------------------------------------------------------------------- */
 
@@ -93,8 +59,13 @@ export default function AccountPage() {
 
     setSuccess('');
 
-    const fullName =
-      `${firstName.trim()} ${lastName.trim()}`.trim();
+    const formData = new FormData(event.currentTarget);
+
+    const firstName = String(formData.get('firstName') ?? '').trim();
+    const lastName = String(formData.get('lastName') ?? '').trim();
+    const email = String(formData.get('email') ?? '').trim();
+
+    const fullName = `${firstName} ${lastName}`.trim();
 
     if (!fullName) {
       setError(
@@ -118,7 +89,7 @@ export default function AccountPage() {
       const response =
         await updateProfile(
           fullName,
-          email.trim()
+          email
         );
 
       updateUser(
@@ -249,6 +220,11 @@ export default function AccountPage() {
     }
   };
 
+  const fullName = user?.name?.trim() ?? '';
+  const nameParts = fullName.split(/\s+/).filter(Boolean);
+  const initialFirstName = nameParts[0] ?? '';
+  const initialLastName = nameParts.slice(1).join(' ');
+
   return (
     <ProtectedRoute>
       <Header />
@@ -288,6 +264,7 @@ export default function AccountPage() {
           {/* -------------------------------------------------------------- */}
 
           <form
+            key={`${user?.id ?? 'anonymous'}-${user?.name ?? ''}-${user?.email ?? ''}`}
             className={
               styles.accountForm
             }
@@ -310,17 +287,7 @@ export default function AccountPage() {
                 id="lastName"
                 name="lastName"
                 type="text"
-                value={
-                  lastName
-                }
-                onChange={(
-                  event
-                ) =>
-                  setLastName(
-                    event.target
-                      .value
-                  )
-                }
+                defaultValue={initialLastName}
                 autoComplete="family-name"
               />
             </div>
@@ -340,17 +307,7 @@ export default function AccountPage() {
                 id="firstName"
                 name="firstName"
                 type="text"
-                value={
-                  firstName
-                }
-                onChange={(
-                  event
-                ) =>
-                  setFirstName(
-                    event.target
-                      .value
-                  )
-                }
+                defaultValue={initialFirstName}
                 autoComplete="given-name"
               />
             </div>
@@ -370,17 +327,7 @@ export default function AccountPage() {
                 id="email"
                 name="email"
                 type="email"
-                value={
-                  email
-                }
-                onChange={(
-                  event
-                ) =>
-                  setEmail(
-                    event.target
-                      .value
-                  )
-                }
+                defaultValue={user?.email ?? ''}
                 autoComplete="email"
                 required
               />

@@ -86,6 +86,8 @@ async function transformProject(project: ApiProject): Promise<ProjectCardData> {
 export default function ProjectsPage() {
   const { user, isLoading: isAuthLoading } = useAuth();
 
+  const userId = user?.id;
+
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
 
   const [projectsRefreshKey, setProjectsRefreshKey] = useState(0);
@@ -97,7 +99,7 @@ export default function ProjectsPage() {
   const [projectsError, setProjectsError] = useState('');
 
   useEffect(() => {
-    if (isAuthLoading || !user) {
+    if (isAuthLoading || !userId) {
       return;
     }
 
@@ -137,7 +139,7 @@ export default function ProjectsPage() {
     return () => {
       isCancelled = true;
     };
-  }, [isAuthLoading, user?.id, projectsRefreshKey]);
+  }, [isAuthLoading, userId, projectsRefreshKey]);
 
   return (
     <ProtectedRoute>

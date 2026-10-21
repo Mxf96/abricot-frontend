@@ -150,6 +150,8 @@ function isTaskInCurrentMonth(task: DashboardTask) {
 export default function DashboardPage() {
   const { user, isLoading: isAuthLoading } = useAuth();
 
+  const userId = user?.id;
+
   const [view, setView] = useState<DashboardView>('list');
 
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
@@ -167,7 +169,7 @@ export default function DashboardPage() {
   /* ------------------------------------------------------------------------ */
 
   useEffect(() => {
-    if (isAuthLoading || !user) {
+    if (isAuthLoading || !userId) {
       return;
     }
 
@@ -244,7 +246,7 @@ export default function DashboardPage() {
     return () => {
       isCancelled = true;
     };
-  }, [isAuthLoading, user?.id]);
+  }, [isAuthLoading, userId]);
 
   /* ------------------------------------------------------------------------ */
   /*                      RECHERCHE - VUE LISTE                               */
@@ -332,7 +334,9 @@ export default function DashboardPage() {
             onClick={() => setView('list')}
             aria-pressed={view === 'list'}
           >
-            <span className={styles.viewIcon} aria-hidden="true">✓</span>
+            <span className={styles.viewIcon} aria-hidden="true">
+              ✓
+            </span>
 
             <span>Liste</span>
           </button>
@@ -345,7 +349,9 @@ export default function DashboardPage() {
             onClick={() => setView('kanban')}
             aria-pressed={view === 'kanban'}
           >
-            <span className={styles.viewIcon} aria-hidden="true">▣</span>
+            <span className={styles.viewIcon} aria-hidden="true">
+              ▣
+            </span>
 
             <span>Kanban</span>
           </button>

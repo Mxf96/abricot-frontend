@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 import Modal from './Modal';
 
@@ -39,6 +39,73 @@ function getDateInputValue(date: string | null | undefined) {
   return new Date(date).toISOString().slice(0, 10);
 }
 
+type AssigneeSelectorProps = {
+  assignees: TaskAssigneeOption[];
+  initialSelectedIds: string[];
+};
+
+function AssigneeSelector({
+  assignees,
+  initialSelectedIds,
+}: AssigneeSelectorProps) {
+  const [selectedAssigneeIds, setSelectedAssigneeIds] =
+    useState<string[]>(initialSelectedIds);
+
+  const toggleAssignee = (userId: string) => {
+    setSelectedAssigneeIds((current) => {
+      if (current.includes(userId)) {
+        return current.filter((id) => id !== userId);
+      }
+
+      return [...current, userId];
+    });
+  };
+
+  return (
+    <fieldset className={styles.assigneesField}>
+      <legend>Assigné à :</legend>
+
+      {assignees.length === 0 ? (
+        <p className={styles.noAssignees}>Aucun utilisateur disponible.</p>
+      ) : (
+        <div className={styles.assigneesList}>
+          {assignees.map((assignee) => {
+            const isSelected = selectedAssigneeIds.includes(assignee.id);
+
+            return (
+              <label
+                key={assignee.id}
+                className={`${styles.assigneeOption} ${
+                  isSelected ? styles.assigneeOptionSelected : ''
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  name="assignees"
+                  value={assignee.id}
+                  checked={isSelected}
+                  onChange={() => toggleAssignee(assignee.id)}
+                />
+
+                <span className={styles.assigneeCheckbox}>
+                  {isSelected ? '✓' : ''}
+                </span>
+
+                <span className={styles.assigneeName}>{assignee.name}</span>
+              </label>
+            );
+          })}
+        </div>
+      )}
+
+      <span className={styles.fieldHint}>
+        Cliquez sur un utilisateur pour l&apos;ajouter ou le retirer de la
+        tâche.
+      </span>
+    </fieldset>
+  );
+}
+
 export default function TaskModal({
   isOpen,
   onClose,
@@ -53,40 +120,6 @@ export default function TaskModal({
   const [error, setError] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
-
-  const [selectedAssigneeIds, setSelectedAssigneeIds] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    if (isEdit && task) {
-      setSelectedAssigneeIds(
-        task.assignees.map((assignee) => assignee.user.id)
-      );
-
-      return;
-    }
-
-    if (assignees.length === 1) {
-      setSelectedAssigneeIds([assignees[0].id]);
-
-      return;
-    }
-
-    setSelectedAssigneeIds([]);
-  }, [isOpen, isEdit, task, assignees]);
-
-  const toggleAssignee = (userId: string) => {
-    setSelectedAssigneeIds((current) => {
-      if (current.includes(userId)) {
-        return current.filter((id) => id !== userId);
-      }
-
-      return [...current, userId];
-    });
-  };
 
   const handleClose = () => {
     if (isLoading) {
@@ -171,8 +204,6 @@ export default function TaskModal({
       }
 
       form.reset();
-
-      setSelectedAssigneeIds([]);
 
       setError('');
 
@@ -275,51 +306,16 @@ export default function TaskModal({
           {/*                            ASSIGNÉS                            */}
           {/* -------------------------------------------------------------- */}
 
-          <fieldset className={styles.assigneesField}>
-            <legend>Assigné à :</legend>
-
-            {assignees.length === 0 ? (
-              <p className={styles.noAssignees}>
-                Aucun utilisateur disponible.
-              </p>
-            ) : (
-              <div className={styles.assigneesList}>
-                {assignees.map((assignee) => {
-                  const isSelected = selectedAssigneeIds.includes(assignee.id);
-
-                  return (
-                    <label
-                      key={assignee.id}
-                      className={`${styles.assigneeOption} ${
-                        isSelected ? styles.assigneeOptionSelected : ''
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        name="assignees"
-                        value={assignee.id}
-                        checked={isSelected}
-                        onChange={() => toggleAssignee(assignee.id)}
-                      />
-
-                      <span className={styles.assigneeCheckbox}>
-                        {isSelected ? '✓' : ''}
-                      </span>
-
-                      <span className={styles.assigneeName}>
-                        {assignee.name}
-                      </span>
-                    </label>
-                  );
-                })}
-              </div>
-            )}
-
-            <span className={styles.fieldHint}>
-              Cliquez sur un utilisateur pour l'ajouter ou le retirer de la
-              tâche.
-            </span>
-          </fieldset>
+          <AssigneeSelector
+            assignees={assignees}
+            initialSelectedIds={
+              isEdit && task
+                ? task.assignees.map((assignee) => assignee.user.id)
+                : assignees.length === 1
+                  ? [assignees[0].id]
+                  : []
+            }
+          />
 
           {/* -------------------------------------------------------------- */}
           {/*                     STATUT - CRÉATION                          */}
