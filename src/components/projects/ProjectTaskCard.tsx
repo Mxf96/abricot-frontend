@@ -27,7 +27,7 @@ type ProjectTaskCardProps = {
   assignees: TaskAssignee[];
   commentItems: TaskComment[];
 
-  onEdit: () => void;
+  onEdit?: () => void;
 
   onDelete?: () => void;
 
@@ -125,7 +125,7 @@ export default function ProjectTaskCard({
   const handleEdit = () => {
     setIsMenuOpen(false);
 
-    onEdit();
+    onEdit?.();
   };
 
   /* -------------------------------------------------------------------------- */
@@ -253,14 +253,16 @@ export default function ProjectTaskCard({
               role="menu"
               aria-label={`Actions pour ${title}`}
             >
-              <button
-                type="button"
-                className={styles.taskMenuAction}
-                role="menuitem"
-                onClick={handleEdit}
-              >
-                Modifier
-              </button>
+              {onEdit && (
+                <button
+                  type="button"
+                  className={styles.taskMenuAction}
+                  role="menuitem"
+                  onClick={handleEdit}
+                >
+                  Modifier
+                </button>
+              )}
 
               <button
                 type="button"

@@ -27,6 +27,7 @@ import {
   getProjectTasks,
 } from '@/services/projectService';
 
+
 import styles from '@/styles/components/projects/SingleProject.module.scss';
 
 type TaskStatus = 'todo' | 'in-progress' | 'done';
@@ -286,7 +287,12 @@ export default function SingleProjectPage() {
   /*                              PERMISSIONS                                   */
   /* -------------------------------------------------------------------------- */
 
-  const canEditProject = project?.userRole === 'ADMIN';
+  const isProjectAdmin = project?.userRole === 'ADMIN';
+
+  const canCreateDeleteTasks =
+    project?.userRole === 'ADMIN' || project?.userRole === 'CONTRIBUTOR';
+
+  const canEditTasks = isProjectAdmin;
 
   /* -------------------------------------------------------------------------- */
   /*                            CONTRIBUTEURS                                   */
@@ -421,7 +427,7 @@ export default function SingleProjectPage() {
                   <div className={styles.projectTitle}>
                     <h1>{project.name}</h1>
 
-                    {canEditProject && (
+                    {isProjectAdmin && (
                       <button
                         type="button"
                         className={styles.editButton}
@@ -436,24 +442,26 @@ export default function SingleProjectPage() {
                 </div>
               </div>
 
-              <div className={styles.projectActions}>
-                <button
-                  type="button"
-                  className={styles.createTaskButton}
-                  onClick={() => setIsCreateTaskOpen(true)}
-                >
-                  Créer une tâche
-                </button>
+              {canCreateDeleteTasks && (
+                <div className={styles.projectActions}>
+                  <button
+                    type="button"
+                    className={styles.createTaskButton}
+                    onClick={() => setIsCreateTaskOpen(true)}
+                  >
+                    Créer une tâche
+                  </button>
 
-                <button
-                  type="button"
-                  className={styles.aiButton}
-                  onClick={() => setIsAiOpen(true)}
-                >
-                  <span>✦</span>
-                  IA
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className={styles.aiButton}
+                    onClick={() => setIsAiOpen(true)}
+                  >
+                    <span>✦</span>
+                    IA
+                  </button>
+                </div>
+              )}
             </section>
 
             {/* -------------------------------------------------------- */}
@@ -571,8 +579,16 @@ export default function SingleProjectPage() {
                     <ProjectTaskCard
                       key={task.id}
                       {...task}
-                      onEdit={() => handleEditTask(task.id)}
-                      onDelete={() => handleDeleteTask(task.id, task.title)}
+                      onEdit={
+                        canEditTasks
+                          ? () => handleEditTask(task.id)
+                          : undefined
+                      }
+                      onDelete={
+                        canCreateDeleteTasks
+                          ? () => handleDeleteTask(task.id, task.title)
+                          : undefined
+                      }
                       onAddComment={(content) =>
                         handleAddTaskComment(task.id, content)
                       }
@@ -589,45 +605,51 @@ export default function SingleProjectPage() {
       {/*                      MODIFICATION PROJET                          */}
       {/* ---------------------------------------------------------------- */}
 
-      <ProjectModal
-        isOpen={isEditProjectOpen}
-        onClose={() => setIsEditProjectOpen(false)}
-        mode="edit"
-        project={project}
-        onSuccess={() => setProjectRefreshKey((current) => current + 1)}
-        onDeleteSuccess={handleProjectDeleted}
-      />
+      {isProjectAdmin && (
+        <ProjectModal
+          isOpen={isEditProjectOpen}
+          onClose={() => setIsEditProjectOpen(false)}
+          mode="edit"
+          project={project}
+          onSuccess={() => setProjectRefreshKey((current) => current + 1)}
+          onDeleteSuccess={handleProjectDeleted}
+        />
+      )}
 
       {/* ---------------------------------------------------------------- */}
       {/*                       CRÉATION TÂCHE                              */}
       {/* ---------------------------------------------------------------- */}
 
-      <TaskModal
-        isOpen={isCreateTaskOpen}
-        onClose={() => setIsCreateTaskOpen(false)}
-        mode="create"
-        projectId={projectId}
-        assignees={taskAssigneeOptions}
-        onSuccess={() => setProjectRefreshKey((current) => current + 1)}
-      />
+      {canCreateDeleteTasks && (
+        <TaskModal
+          isOpen={isCreateTaskOpen}
+          onClose={() => setIsCreateTaskOpen(false)}
+          mode="create"
+          projectId={projectId}
+          assignees={taskAssigneeOptions}
+          onSuccess={() => setProjectRefreshKey((current) => current + 1)}
+        />
+      )}
 
       {/* ---------------------------------------------------------------- */}
       {/*                      MODIFICATION TÂCHE                           */}
       {/* ---------------------------------------------------------------- */}
 
-      <TaskModal
-        isOpen={isEditTaskOpen}
-        onClose={() => {
-          setIsEditTaskOpen(false);
+      {canEditTasks && (
+        <TaskModal
+          isOpen={isEditTaskOpen}
+          onClose={() => {
+            setIsEditTaskOpen(false);
 
-          setSelectedTask(null);
-        }}
-        mode="edit"
-        projectId={projectId}
-        assignees={taskAssigneeOptions}
-        task={selectedTask}
-        onSuccess={() => setProjectRefreshKey((current) => current + 1)}
-      />
+            setSelectedTask(null);
+          }}
+          mode="edit"
+          projectId={projectId}
+          assignees={taskAssigneeOptions}
+          task={selectedTask}
+          onSuccess={() => setProjectRefreshKey((current) => current + 1)}
+        />
+      )}
 
       {/* ---------------------------------------------------------------- */}
       {/*                             IA                                    */}
