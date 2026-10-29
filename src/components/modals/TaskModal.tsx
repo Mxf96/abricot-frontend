@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 
 import Modal from './Modal';
 
@@ -117,9 +117,23 @@ export default function TaskModal({
 }: TaskModalProps) {
   const isEdit = mode === 'edit';
 
+  const [selectedStatus, setSelectedStatus] = useState<
+    'TODO' | 'IN_PROGRESS' | 'DONE'
+  >(task?.status === 'CANCELLED' ? 'TODO' : (task?.status ?? 'TODO'));
+
   const [error, setError] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    setSelectedStatus(
+      task?.status === 'CANCELLED' ? 'TODO' : (task?.status ?? 'TODO')
+    );
+  }, [isOpen, task]);
 
   const handleClose = () => {
     if (isLoading) {
@@ -342,32 +356,49 @@ export default function TaskModal({
               <legend>Statut :</legend>
 
               <div className={styles.statusList}>
-                <label className={`${styles.status} ${styles.todo}`}>
+                <label
+                  className={`${styles.status} ${styles.todo} ${
+                    selectedStatus === 'TODO' ? styles.statusSelected : ''
+                  }`}
+                >
                   <input
                     type="radio"
                     name="status"
                     value="TODO"
-                    defaultChecked={task?.status === 'TODO'}
+                    checked={selectedStatus === 'TODO'}
+                    onChange={() => setSelectedStatus('TODO')}
                   />
                   À faire
                 </label>
 
-                <label className={`${styles.status} ${styles.inProgress}`}>
+                <label
+                  className={`${styles.status} ${styles.inProgress} ${
+                    selectedStatus === 'IN_PROGRESS'
+                      ? styles.statusSelected
+                      : ''
+                  }`}
+                >
                   <input
                     type="radio"
                     name="status"
                     value="IN_PROGRESS"
-                    defaultChecked={task?.status === 'IN_PROGRESS'}
+                    checked={selectedStatus === 'IN_PROGRESS'}
+                    onChange={() => setSelectedStatus('IN_PROGRESS')}
                   />
                   En cours
                 </label>
 
-                <label className={`${styles.status} ${styles.done}`}>
+                <label
+                  className={`${styles.status} ${styles.done} ${
+                    selectedStatus === 'DONE' ? styles.statusSelected : ''
+                  }`}
+                >
                   <input
                     type="radio"
                     name="status"
                     value="DONE"
-                    defaultChecked={task?.status === 'DONE'}
+                    checked={selectedStatus === 'DONE'}
+                    onChange={() => setSelectedStatus('DONE')}
                   />
                   Terminée
                 </label>

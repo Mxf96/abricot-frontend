@@ -341,11 +341,17 @@
 
   padding: 3px 17px;
 
+  border: 2px solid transparent;
   border-radius: 20px;
 
   font-size: 13px;
 
   cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 
   input {
     position: absolute;
@@ -355,6 +361,16 @@
 
     opacity: 0;
   }
+}
+
+.statusSelected {
+  border-color: currentColor;
+
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+
+  font-weight: 600;
+
+  transform: scale(1.04);
 }
 
 .todo {
